@@ -6,7 +6,7 @@ var express  = require('express'),
 	socketIo = require('socket.io'),
 	mongo = require('mongodb'),
 	redis = require('redis'),
-	nko   = require('nko')('VCPo4hn9tsswPvB7'),
+	nko   = require('nko')('VCPo4hn9tsswPvB7');
 
 
 // =============================================================================
@@ -16,6 +16,9 @@ var express  = require('express'),
 var id = 0,
 	charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-=";
 
+var db = {
+	setId : function() {return}
+}
 
 function unique(charset, length, number) {
         var base = strlen(charset), converted = "";
@@ -70,7 +73,7 @@ app.get('/', function(req, res){
 
 app.get(/\/([0-9]{6})\+/, function(req, res) {
 	res.render('track', {
-
+		id : req.params[0]
 	});
 });
 
@@ -80,12 +83,11 @@ app.get(/\/([0-9]{6})/, function(req, res) {
 });
 
 app.post(/\/data/, function(req, res) {
-	var data = JSON.parse(req.body);
-	if (!'url' in data) res.send({ err : 'No url' });
+	if (!req.body.url) res.send('Error, Error!');
 	var unique = unique(charset, 6, id);
-	res.send(JSON.parse({ shortUrl : unique }));
+	res.redirect('/' + unique + '+');
 	db.setId(shortUrl, {
-		longUrl : res.body.url,
+		longUrl : req.body.url,
 		startTime : new Date()
 	});
 });
