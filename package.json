@@ -1,0 +1,14 @@
+{
+  "author": "Alex Davey, Koen Klaren",
+  "name": "webdevrefiners",
+  "description": "Track your links like never before.",
+  "version": "0.0.0",
+  "repository": {
+    "url": ""
+  },
+  "engines": {
+    "node": "~v0.4.9-pre"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
