@@ -14,11 +14,16 @@ var wdr = new (function(){
 	});
 	animateStrip();
 	
-	$('shorten-url').addEvent('invalid submit', function(e){
-	    var url = this.getElement('input[type=url]'),
-		regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
-	    if (regexp.test(url.value))
-		url.value;
+	$('shorten-url').addEvent('submit', function(e){	    
+	    var url = this.getElement('input'),
+		regexp = /^(http(?:s)?\:\/\/[a-zA-Z0-9\-]+(?:\.[a-zA-Z0-9\-]+)*\.[a-zA-Z]{2,6}(?:\/?|(?:\/[\w\-]+)*)(?:\/?|\/\w+\.[a-zA-Z]{2,4}(?:\?[\w]+\=[\w\-]+)?)?(?:\&[\w]+\=[\w\-]+)*)$/;
+	    if (!regexp.test(url.value)){
+		url.value = 'http://' + url.value;
+		if (!regexp.test(url.value)){
+		    e.preventDefault();
+		    wdr.flash('FF0000', 2000);
+		}
+	    }
 	})
     }
     
