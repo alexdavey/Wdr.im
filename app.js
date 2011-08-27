@@ -2,19 +2,40 @@
 // |                               Dependencies								   |
 // =============================================================================
 
-var express = require('express'),
+var express  = require('express'),
+	socketIo = require('socket.io'),
 	mongo = require('mongodb'),
 	redis = require('redis'),
-	nko   = require('nko')('VCPo4hn9tsswPvB7');
+	nko   = require('nko')('VCPo4hn9tsswPvB7'),
+
 
 // =============================================================================
 // |                              The app itself							   |
 // =============================================================================
 
-var id = 0;
+var id = 0,
+	charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-=";
 
-function unique() {
-	
+
+function unique(charset, length, number) {
+        var base = strlen(charset), converted = "";
+        while (length > 0) {
+            converted = charset[length % base] + converted;
+            length = ~~(length / base);
+        }
+        return converted;
+}
+
+function getIp(req) {
+	var ipAddress, forwardedIpsStr = req.header('x-forwarded-for'); 
+	if (forwardedIpsStr) {
+		var forwardedIps = forwardedIpsStr.split(',');
+		ipAddress = forwardedIps[0];
+	}
+		if (!ipAddress) {
+		ipAddress = req.connection.remoteAddress;
+	}
+	return ipAddress;
 }
 
 // =============================================================================
@@ -44,9 +65,7 @@ app.configure('production', function(){
 // |                                 Routes  								   |
 // =============================================================================
 app.get('/', function(req, res){
-	res.render('index', {
-		
-	});
+	res.render('index');
 });
 
 app.get(/\/([0-9]{6})\+/, function(req, res) {
@@ -61,11 +80,14 @@ app.get(/\/([0-9]{6})/, function(req, res) {
 });
 
 app.post(/\/data/, function(req, res) {
-	
-});
-
-app.get(/\/([0-9]{6})\?/, function(req, res) {
-	var id = req.params[0];
+	var data = JSON.parse(req.body);
+	if (!'url' in data) res.send({ err : 'No url' });
+	var unique = unique(charset, 6, id);
+	res.send(JSON.parse({ shortUrl : unique }));
+	db.setId(shortUrl, {
+		longUrl : res.body.url,
+		startTime : new Date()
+	});
 });
 
 
