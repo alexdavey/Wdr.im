@@ -21,7 +21,7 @@ var db = {
 }
 
 function unique(charset, length, number) {
-        var base = charset.length, converted = "";
+        var base = charset.length, converted = '';
         while (length > 0) {
             converted = charset[length % base] + converted;
             length = ~~(length / base);
