@@ -1,9 +1,11 @@
 {
     "name": "application-name"
   , "version": "0.0.1"
+  , "start": "app.js"
   , "private": true
   , "dependencies": {
       "express": "2.4.3"
     , "ejs": ">= 0.0.1"
+	, "nko": ">= 0.0.1"
   }
 }
