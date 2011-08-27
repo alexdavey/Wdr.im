@@ -11,7 +11,7 @@ input {
     text-shadow: 0 1px 0 #fff;
 }
 
-input[type=url] {
+input[type=text] {
     outline: 0;
 }
 
@@ -97,7 +97,7 @@ header {
 
 #shorten-url * { vertical-align: top }
 
-#shorten-url input[type=url] {
+#shorten-url input[type=text] {
     padding: 0 20px;
     margin: 0;
     height: 52px;
