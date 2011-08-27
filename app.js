@@ -71,20 +71,20 @@ app.get('/', function(req, res){
 	res.render('index');
 });
 
-app.get(/\/([0-9]{6})\+/, function(req, res) {
+app.get(/\/([0-9]{1,6})\+/, function(req, res) {
 	res.render('track', {
 		id : req.params[0]
 	});
 });
 
 // API routes
-app.get(/\/([0-9]{6})/, function(req, res) {
+app.get(/\/([0-9]{1,6})/, function(req, res) {
 	var id = req.params[0];
 });
 
 app.post(/\/data/, function(req, res) {
 	if (!req.body.url) res.send('Error, Error!');
-	var shortUrl = unique(charset, 6, id++);
+	var shortUrl = unique(charset, id++);
 	res.redirect('/' + shortUrl + '+');
 	db.setId(shortUrl, {
 		longUrl : req.body.url,
