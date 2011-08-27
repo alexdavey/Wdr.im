@@ -13,19 +13,18 @@ var express  = require('express'),
 // |                              The app itself							   |
 // =============================================================================
 
-var id = 0,
+var id = 1,
 	charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-=";
 
 var db = {
 	setId : function() {return}
 }
 
-function unique(charset, length, number) {
+function unique(charset, number) {
 	var base = charset.length, converted = '';
-	console.log(base, converted);
-	while (length > 0) {
-		converted = charset[length % base] + converted;
-		length = Math.floor(length / base);
+	while (number > 0) {
+		converted = charset[number % base] + converted;
+		number = Math.floor(number / base);
 	}
 	return converted;
 }
@@ -85,7 +84,7 @@ app.get(/\/([0-9]{6})/, function(req, res) {
 
 app.post(/\/data/, function(req, res) {
 	if (!req.body.url) res.send('Error, Error!');
-	var shortUrl = unique(charset, 6, id);
+	var shortUrl = unique(charset, 6, id++);
 	res.redirect('/' + shortUrl + '+');
 	db.setId(shortUrl, {
 		longUrl : req.body.url,
