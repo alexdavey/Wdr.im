@@ -13,6 +13,13 @@ var wdr = new (function(){
 	    onComplete:	animateStrip
 	});
 	animateStrip();
+	
+	$('shorten-url').addEvent('invalid submit', function(e){
+	    var url = this.getElement('input[type=url]'),
+		regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+	    if (regexp.test(url.value))
+		url.value;
+	})
     }
     
     this.flash = function(color, time){

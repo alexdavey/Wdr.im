@@ -3,39 +3,39 @@
 // =============================================================================
 
 var express  = require('express'),
-	socketIo = require('socket.io'),
-	mongo = require('mongodb'),
-	redis = require('redis'),
-	nko   = require('nko')('VCPo4hn9tsswPvB7'),
+    socketIo = require('socket.io'),
+    mongo = require('mongodb'),
+    redis = require('redis'),
+    nko   = require('nko')('VCPo4hn9tsswPvB7'),
 
 
 // =============================================================================
 // |                              The app itself							   |
 // =============================================================================
 
-var id = 0,
-	charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-=";
+    id = 0,
+    charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-=";
 
 
 function unique(charset, length, number) {
-        var base = strlen(charset), converted = "";
-        while (length > 0) {
-            converted = charset[length % base] + converted;
-            length = ~~(length / base);
-        }
-        return converted;
+    var base = strlen(charset), converted = "";
+    while (length > 0) {
+        converted = charset[length % base] + converted;
+        length = ~~(length / base);
+    }
+    return converted;
 }
 
 function getIp(req) {
-	var ipAddress, forwardedIpsStr = req.header('x-forwarded-for'); 
-	if (forwardedIpsStr) {
-		var forwardedIps = forwardedIpsStr.split(',');
-		ipAddress = forwardedIps[0];
-	}
-		if (!ipAddress) {
-		ipAddress = req.connection.remoteAddress;
-	}
-	return ipAddress;
+    var ipAddress, forwardedIpsStr = req.header('x-forwarded-for'); 
+    if (forwardedIpsStr) {
+	var forwardedIps = forwardedIpsStr.split(',');
+	ipAddress = forwardedIps[0];
+    }
+    if (!ipAddress) {
+	ipAddress = req.connection.remoteAddress;
+    }
+    return ipAddress;
 }
 
 // =============================================================================
@@ -45,16 +45,16 @@ function getIp(req) {
 var app = module.exports = express.createServer();
 
 app.configure(function(){
-  app.set('views', __dirname + '/views');
-  app.set('view engine', 'ejs');
-  app.use(express.bodyParser());
-  app.use(express.methodOverride());
-  app.use(app.router);
-  app.use(express.static(__dirname + '/public'));
+    app.set('views', __dirname + '/views');
+    app.set('view engine', 'ejs');
+    app.use(express.bodyParser());
+    app.use(express.methodOverride());
+    app.use(app.router);
+    app.use(express.static(__dirname + '/public'));
 });
 
 app.configure('development', function(){
-  app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
+    app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
 });
 
 app.configure('production', function(){
@@ -65,13 +65,13 @@ app.configure('production', function(){
 // |                                 Routes  								   |
 // =============================================================================
 app.get('/', function(req, res){
-	res.render('index');
+    res.render('index');
 });
 
 app.get(/\/([0-9]{6})\+/, function(req, res) {
-	res.render('track', {
+    res.render('track', {
 
-	});
+    });
 });
 
 // API routes
@@ -80,14 +80,15 @@ app.get(/\/([0-9]{6})/, function(req, res) {
 });
 
 app.post(/\/data/, function(req, res) {
-	var data = JSON.parse(req.body);
-	if (!'url' in data) res.send({ err : 'No url' });
-	var unique = unique(charset, 6, id);
-	res.send(JSON.parse({ shortUrl : unique }));
-	db.setId(shortUrl, {
-		longUrl : res.body.url,
-		startTime : new Date()
-	});
+    var data = JSON.parse(req.body);
+    if (!'url' in data)
+	res.send({ err : 'No url' });
+    var unique = unique(charset, 6, id);
+    res.send(JSON.parse({ shortUrl : unique }));
+    db.setId(shortUrl, {
+	longUrl : res.body.url,
+	startTime : new Date()
+    });
 });
 
 
