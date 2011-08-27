@@ -9,6 +9,7 @@ var express  = require('express'),
     nko   = require('nko')('VCPo4hn9tsswPvB7'),
 
 
+
 // =============================================================================
 // |                              The app itself							   |
 // =============================================================================
@@ -16,6 +17,9 @@ var express  = require('express'),
     id = 0,
     charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-=";
 
+var db = {
+	setId : function() {return}
+}
 
 function unique(charset, length, number) {
     var base = strlen(charset), converted = "";
@@ -80,13 +84,11 @@ app.get(/\/([0-9]{6})/, function(req, res) {
 });
 
 app.post(/\/data/, function(req, res) {
-    var data = JSON.parse(req.body);
-    if (!'url' in data)
-	res.send({ err : 'No url' });
-    var unique = unique(charset, 6, id);
-    res.send(JSON.parse({ shortUrl : unique }));
+    if (!req.body.url) res.send('Error, Error!');
+    var shortUrl = unique(charset, 6, id);
+    res.redirect('/' + shortUrl + '+');
     db.setId(shortUrl, {
-	longUrl : res.body.url,
+	longUrl : req.body.url,
 	startTime : new Date()
     });
 });
