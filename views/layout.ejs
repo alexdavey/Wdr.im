@@ -1,10 +1,18 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title><%= title %></title>
+<head>
+    <title>wdR.im - Link shortening service</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
-    <%- body %>
-  </body>
+</head>
+<body>
+    <header>
+	<a href='#http://wdr.im'>
+	    <img src='/img/logo.png' alt='wdR.im'/>
+	</a>
+    </header>
+    <div id='color-strip'></div>
+    <div role='main' id='main'>
+	<%- body %>
+    </div>
+</body>
 </html>

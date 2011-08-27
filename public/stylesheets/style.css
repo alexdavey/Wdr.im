@@ -1,8 +1,100 @@
 body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+    background: #f5f5f5;
+    margin: 0;
 }
 
-a {
-  color: #00B7FF;
+body,
+input {
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    font-weight: 300;
+    color: #383838;
+    text-shadow: 0 1px 0 #fff;
+}
+
+header {
+    width: 800px;
+    margin: 40px auto 5px;
+}
+
+#main {
+    width: 800px;
+    margin: 10px auto 0;
+}
+
+#color-strip {
+    height: 4px;
+    border-bottom: 1px solid #fcfcfc;
+    -webkit-box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.5), inset 0 0 3px 0 rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.5), inset 0 0 3px 0 rgba(0, 0, 0, 0.5);
+    box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.5), inset 0 0 3px 0 rgba(0, 0, 0, 0.5);
+    /* Rainbow gradient */
+    background: -moz-linear-gradient(left, #ff0000 0%, #ff00ff 17%, #0000ff 33%, #00ffff 50%, #00ff00 67%, #ffff00 83%, #ff0000 100%);
+    background: -webkit-gradient(linear, left top, right top, color-stop(0%,#ff0000), color-stop(17%,#ff00ff), color-stop(33%,#0000ff), color-stop(50%,#00ffff), color-stop(67%,#00ff00), color-stop(83%,#ffff00), color-stop(100%,#ff0000));
+    background: -webkit-linear-gradient(left, #ff0000 0%,#ff00ff 17%,#0000ff 33%,#00ffff 50%,#00ff00 67%,#ffff00 83%,#ff0000 100%);
+    background: -o-linear-gradient(left, #ff0000 0%,#ff00ff 17%,#0000ff 33%,#00ffff 50%,#00ff00 67%,#ffff00 83%,#ff0000 100%);
+    background: -ms-linear-gradient(left, #ff0000 0%,#ff00ff 17%,#0000ff 33%,#00ffff 50%,#00ff00 67%,#ffff00 83%,#ff0000 100%);
+    background: linear-gradient(left, #ff0000 0%,#ff00ff 17%,#0000ff 33%,#00ffff 50%,#00ff00 67%,#ffff00 83%,#ff0000 100%);
+}
+
+.input-back {
+    -webkit-box-shadow: inset 0 1px 1px 0 rgba(0, 0, 0, 0.4), inset 0 0 2px 0 rgba(0, 0, 0, 0.5), 0 1px 0 0 #fcfcfc;
+    -moz-box-shadow: inset 0 1px 1px 0 rgba(0, 0, 0, 0.4), inset 0 0 2px 0 rgba(0, 0, 0, 0.5), 0 1px 0 0 #fcfcfc;
+    box-shadow: inset 0 1px 1px 0 rgba(0, 0, 0, 0.4), inset 0 0 2px 0 rgba(0, 0, 0, 0.5), 0 1px 0 0 #fcfcfc;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    background: #f9f9f9;
+}
+
+.button {
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 11px 20px;
+    border: 1px solid #ababab;
+    border-radius: 3px;
+    /* Background gradient */
+    background: #f1f1f1;
+    background: -moz-linear-gradient(top, #f1f1f1 0%, #ebebeb 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f1f1f1), color-stop(100%,#ebebeb));
+    background: -webkit-linear-gradient(top, #f1f1f1 0%,#ebebeb 100%);
+    background: -o-linear-gradient(top, #f1f1f1 0%,#ebebeb 100%);
+    background: -ms-linear-gradient(top, #f1f1f1 0%,#ebebeb 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f1f1f1', endColorstr='#ebebeb',GradientType=0 );
+    background: linear-gradient(top, #f1f1f1 0%,#ebebeb 100%);
+    -webkit-box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1), 0 1px 0 0 #fff inset;
+}
+
+.button:hover {
+    background: #ededed;
+    background: -moz-linear-gradient(top, #ededed 0%, #e5e5e5 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ededed), color-stop(100%,#e5e5e5));
+    background: -webkit-linear-gradient(top, #ededed 0%,#e5e5e5 100%);
+    background: -o-linear-gradient(top, #ededed 0%,#e5e5e5 100%);
+    background: -ms-linear-gradient(top, #ededed 0%,#e5e5e5 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ededed', endColorstr='#e5e5e5',GradientType=0 );
+    background: linear-gradient(top, #ededed 0%,#e5e5e5 100%);
+}
+
+.button:active {
+    -webkit-box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.2) inset;
+}
+
+#shorten-url { height: 52px }
+
+#shorten-url * { vertical-align: top }
+
+#shorten-url input[type=url] {
+    padding: 0 20px;
+    margin: 0;
+    height: 52px;
+    width: 600px;
+    background: none;
+    border: 0;
+    font-size: 16px;
+}
+
+#shorten-url .button {
+    margin: 4px 0 0 2px;
+    width: 150px;
 }
