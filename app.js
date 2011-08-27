@@ -21,7 +21,7 @@ var db = {
 }
 
 function unique(charset, length, number) {
-        var base = strlen(charset), converted = "";
+        var base = charset.length, converted = "";
         while (length > 0) {
             converted = charset[length % base] + converted;
             length = ~~(length / base);
@@ -84,8 +84,8 @@ app.get(/\/([0-9]{6})/, function(req, res) {
 
 app.post(/\/data/, function(req, res) {
 	if (!req.body.url) res.send('Error, Error!');
-	var unique = unique(charset, 6, id);
-	res.redirect('/' + unique + '+');
+	var shortUrl = unique(charset, 6, id);
+	res.redirect('/' + shortUrl + '+');
 	db.setId(shortUrl, {
 		longUrl : req.body.url,
 		startTime : new Date()
