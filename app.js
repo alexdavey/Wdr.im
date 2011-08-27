@@ -1,5 +1,5 @@
 // =============================================================================
-// |                              Dependencies 								   |
+// |                               Dependencies								   |
 // =============================================================================
 
 var express = require('express'),
@@ -7,11 +7,21 @@ var express = require('express'),
 	redis = require('redis'),
 	nko   = require('nko')('VCPo4hn9tsswPvB7');
 
-var app = module.exports = express.createServer();
+// =============================================================================
+// |                              The app itself							   |
+// =============================================================================
+
+var id = 0;
+
+function unique() {
+	
+}
 
 // =============================================================================
-// |                                 Express  								   |
+// |                                  Express  								   |
 // =============================================================================
+
+var app = module.exports = express.createServer();
 
 app.configure(function(){
   app.set('views', __dirname + '/views');
