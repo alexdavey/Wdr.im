@@ -4,23 +4,27 @@
 		request = require('request'),
 		db = require('db');
 	
-	var io = sio.listen(???????), clients = [];
+	var io = sio.listen(???????);
 
-	socket.on('connection', function() {
-		api.forEach(function(value, key) { socket.on(key, value) });
+	socket.on('connection', function(socket) {
+		api.forEach(function(value, key) {
+			socket.on(key, function(data) {
+				value(socket, JSON.parse(data));
+			});
+		});
 	});
 
 	var api = {
 
-		ip : function() {
+		ip : function(socket, data) {
+				
+		},
+
+		browser : function(socket, data) {
 			
 		},
 
-		browser : function() {
-			
-		},
-
-		time : function() {
+		time : function(socket, data) {
 			
 		},
 
@@ -28,6 +32,6 @@
 			
 		}
 
-	}
+	};
 
 });

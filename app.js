@@ -1,7 +1,6 @@
-
-/**
- * Module dependencies.
- */
+// =============================================================================
+// |                              Dependencies 								   |
+// =============================================================================
 
 var express = require('express'),
 	mongo = require('mongodb'),
@@ -10,7 +9,9 @@ var express = require('express'),
 
 var app = module.exports = express.createServer();
 
-// Configuration
+// =============================================================================
+// |                                 Express  								   |
+// =============================================================================
 
 app.configure(function(){
   app.set('views', __dirname + '/views');
@@ -29,7 +30,9 @@ app.configure('production', function(){
   app.use(express.errorHandler()); 
 });
 
-// Renderable routes
+// =============================================================================
+// |                                 Routes  								   |
+// =============================================================================
 app.get('/', function(req, res){
 	res.render('index', {
 		
@@ -56,5 +59,8 @@ app.get(/\/([0-9]{6})\?/, function(req, res) {
 });
 
 
+// =============================================================================
+// |                                 Start  								   |
+// =============================================================================
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
