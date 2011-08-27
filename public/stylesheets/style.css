@@ -11,9 +11,13 @@ input {
     text-shadow: 0 1px 0 #fff;
 }
 
+input[type=url] {
+    outline: 0;
+}
+
 header {
     width: 800px;
-    margin: 40px auto 5px;
+    margin: 90px auto 5px;
 }
 
 #main {
@@ -34,6 +38,15 @@ header {
     background: -o-linear-gradient(left, #ff0000 0%,#ff00ff 17%,#0000ff 33%,#00ffff 50%,#00ff00 67%,#ffff00 83%,#ff0000 100%);
     background: -ms-linear-gradient(left, #ff0000 0%,#ff00ff 17%,#0000ff 33%,#00ffff 50%,#00ff00 67%,#ffff00 83%,#ff0000 100%);
     background: linear-gradient(left, #ff0000 0%,#ff00ff 17%,#0000ff 33%,#00ffff 50%,#00ff00 67%,#ffff00 83%,#ff0000 100%);
+}
+
+#color-flash
+{
+    opacity: 0;
+    height: 4px;
+    -webkit-box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.5), inset 0 0 3px 0 rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.5), inset 0 0 3px 0 rgba(0, 0, 0, 0.5);
+    box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.5), inset 0 0 3px 0 rgba(0, 0, 0, 0.5);
 }
 
 .input-back {
@@ -95,6 +108,7 @@ header {
 }
 
 #shorten-url .button {
+    position: relative;
     margin: 4px 0 0 2px;
     width: 150px;
 }

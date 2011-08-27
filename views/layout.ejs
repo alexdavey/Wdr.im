@@ -2,7 +2,9 @@
 <html>
 <head>
     <title>wdR.im - Link shortening service</title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel='stylesheet' href='/stylesheets/style.css'/>
+    <script src='https://ajax.googleapis.com/ajax/libs/mootools/1.3.2/mootools-yui-compressed.js'></script>
+    <script src='/js/wdr.im.js'></script>
 </head>
 <body>
     <header>
@@ -10,7 +12,7 @@
 	    <img src='/img/logo.png' alt='wdR.im'/>
 	</a>
     </header>
-    <div id='color-strip'></div>
+    <div id='color-strip'><div id='color-flash'></div></div>
     <div role='main' id='main'>
 	<%- body %>
     </div>
