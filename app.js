@@ -20,14 +20,15 @@ var db = {
 	setId : function() {return}
 }
 
-function unique(charset, number) {
+function unique(charset, length, number) {
 	var base = charset.length, converted = '';
-	while (number > 0) {
+	do {
 		converted = charset[number % base] + converted;
 		number = Math.floor(number / base);
-	}
+	} while (number > 0)
 	return converted;
 }
+
 
 function getIp(req) {
 	var ipAddress, forwardedIpsStr = req.header('x-forwarded-for'); 
@@ -71,14 +72,14 @@ app.get('/', function(req, res){
 	res.render('index');
 });
 
-app.get(/\/([0-9]{6})\+/, function(req, res) {
+app.get(/\/([0-9a-z\_\-\=]{1, 6})\+/i, function(req, res) {
 	res.render('track', {
 		id : req.params[0]
 	});
 });
 
 // API routes
-app.get(/\/([0-9]{6})/, function(req, res) {
+app.get(/\/([0-9a-z\_\-\=]{1, 6})/i, function(req, res) {
 	var id = req.params[0];
 });
 
