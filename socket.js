@@ -1,7 +1,8 @@
 (function() {
 	
 	var sio = require('socket.io'),
-		request = require('request');
+		request = require('request'),
+		db = require('db');
 	
 	var io = sio.listen(???????), clients = [];
 
@@ -15,10 +16,17 @@
 			
 		},
 
-		ua : function() {
+		browser : function() {
 			
 		},
 
+		time : function() {
+			
+		},
+
+		source : function() {
+			
+		}
 
 	}
 
