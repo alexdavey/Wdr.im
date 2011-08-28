@@ -4,26 +4,20 @@
     margin: 0;
 }
 
-#clicks {
-    display: inline-block;
-    float: right;
-    padding: 1px 5px 3px;
-    margin: 4px 0 0;
-    min-width: 150px;
-    
-    font-size: 24px;
-    font-weight:bold;
-    text-align: right;
-    
+#charts .chart, #clicks {
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
     border-radius: 3px;
-    
     border: 1px solid #ababab;
-    
     -webkit-box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1),
 			0 0 1px 0 rgba(0, 0, 0, 0.1),
 			0 1px 0 0 #fff inset;
+    -moz-box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1),
+		     0 0 1px 0 rgba(0, 0, 0, 0.1),
+		     0 1px 0 0 #fff inset;
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1),
+		0 0 1px 0 rgba(0, 0, 0, 0.1),
+		0 1px 0 0 #fff inset;
     
     background: #f2f2f2;
     background: -moz-linear-gradient(top, #f2f2f2 0%, #f7f7f7 100%);
@@ -35,8 +29,19 @@
     background: linear-gradient(top, #f2f2f2 0%,#f7f7f7 100%);
 }
 
-#clicks:before
-{
+#clicks {
+    display: inline-block;
+    float: right;
+    padding: 1px 5px 3px;
+    margin: 4px 0 0;
+    min-width: 150px;
+    
+    font-size: 24px;
+    font-weight:bold;
+    text-align: right;
+}
+
+#clicks:before {
     margin: 0 -5px;
     position: relative;
     top: 16px;
@@ -45,4 +50,21 @@
     content: '';
     border-top: 1px solid rgba(0, 0, 0, 0.2);
     border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+#map {
+    margin: 10px 0;
+    height: 550px;
+    border: 5px solid #fff;
+    -webkit-box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.5);
+}
+
+#charts .chart {
+    float: left;
+    display: inline-block;
+    width:  380px;
+    margin: 9px;
+    height: 220px;
+    
+    overflow: hidden;
 }
