@@ -19,8 +19,10 @@ var wdr = new (function(){
 		var url = this.getElement('input'),
 		    hasProtocol = /^(http(?:s)?\:\/\/)/,
 		    isUrl = /^(http(?:s)?\:\/\/[a-zA-Z0-9\-]+(?:\.[a-zA-Z0-9\-]+)*\.[a-zA-Z]{2,6}(?:\/?|(?:\/[\w\-]+)*)(?:\/?|\/\w+\.[a-zA-Z]{2,4}(?:\?[\w]+\=[\w\-]+)?)?(?:\&[\w]+\=[\w\-]+)*)$/;
+		// Trim the url
+		url.value = url.value.trim();
 		if (!isUrl.test(url.value)){
-		    if (!hasProtocol.test(url.value)){
+		    if (!hasProtocol.test(url.value) && url.value !== ''){
 			url.value = 'http://' + url.value;
 			if (!isUrl.test(url.value)){
 			    e.preventDefault();

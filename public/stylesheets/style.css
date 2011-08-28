@@ -128,3 +128,7 @@ header {
     margin: 4px 0 0 2px;
     width: 150px;
 }
+
+.vote {
+    float: right;
+}
