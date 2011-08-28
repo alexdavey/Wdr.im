@@ -8,6 +8,8 @@
 	<option value='4'>Past hour</option>
     </select>
     <h1 title='Short link'>wdR.im/<%= id %></h1>
+    <button class='button' id='copy-url' data-copy='http://wdr.im/<%= id %>'>Copy</button>
+    <span id='copy-bubble'>Copied link!</span><br />
     <a title='Long link' href='<%= longUrl %>'><%= longUrl %></a>
 </div>
 <div id='map' width='790' height='600'></div>

@@ -76,7 +76,7 @@ app.get('/', function(req, res){
 app.get(/\/([\-\=\_0-9]{1,6})\+/, function(req, res) {
 	res.render('track', {
 		id : req.params[0],
-		longUrl : 'google.com',
+		longUrl : 'http://google.com',
 		view : 'tracking',
 		clicks : 1234
 	});
@@ -85,6 +85,7 @@ app.get(/\/([\-\=\_0-9]{1,6})\+/, function(req, res) {
 // API routes
 app.get(/\/([\-\=\_0-9]{1,6})/, function(req, res) {
 	var id = req.params[0];
+	res.send('You requested a shortened url with ID ' + id + '!');
 });
 
 app.post(/\/data/, function(req, res) {

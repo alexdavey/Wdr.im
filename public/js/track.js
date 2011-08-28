@@ -1,6 +1,6 @@
 var track = new (function(){
     
-    var trOpen = false;
+    // Change the time range
     $('time-range').addEvent('change', function(e){
         console.log(this.value);
     });
@@ -55,6 +55,26 @@ var track = new (function(){
         });
     }
     
+    // Init the 
+    window.addEvent('load', function(){
+        new MooClip('#copy-url', {
+            onCopy: function(e){
+                var fx = new Fx.Morph($('copy-bubble'), {
+                    duration: 200,
+                    transition: Fx.Transitions.linear
+                });
+                fx.start({
+                    'opacity'   : [0, 1],
+                    'left'      : [-15, 0]
+                });
+                setTimeout(function(){
+                    fx.start({
+                        'opacity'   : [1, 0]
+                    });
+                }, 2000);
+            }
+        });
+    });
 });
 
 // Debugging & looks awesome :)

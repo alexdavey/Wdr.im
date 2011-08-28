@@ -2,10 +2,48 @@ header {
     margin-top: 50px;
 }
 
+#copy-bubble {
+    opacity: 0;
+    position: relative;
+    display: inline-block;
+    vertical-align: top;
+    background: #3B3B3B;
+    color: #EDEDED;
+    font-size: 10px;
+    text-shadow: 0 -1px 0px #000;
+    padding: 4px 8px;
+    margin: 4px 0 0;
+    -webkit-border-radius: 3px;
+}
+
+#copy-bubble:before {
+    display: block;
+    content: '';
+    border-color: transparent #3B3B3B transparent transparent;
+    border-style: solid;
+    border-width: 6px;
+    height: 0;
+    width: 0;
+    position: absolute;
+    left: -11px;
+    top: 5px;
+    
+}
+
 #main-info h1 {
+    display: inline-block;
     font-size: 25px;
     font-style: italic;
     margin: 0;
+}
+
+#copy-url {
+    position: relative;
+    z-index: 10;
+    vertical-align: top;
+    font-size: 12px;
+    margin: 3px 5px 0;
+    padding: 3px 10px;
 }
 
 #charts .chart, #clicks, #time-range {
@@ -75,6 +113,9 @@ header {
     height: 550px;
     border: 5px solid #fff;
     -webkit-box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.5);
+    box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.5);
+    text-shadow: none;
 }
 
 #charts {
