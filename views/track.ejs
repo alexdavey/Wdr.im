@@ -1,5 +1,37 @@
 <div id='main-info'>
-    <span id='clicks'><%= clicks %></span>
+    <span id='clicks' title='Clicks'><%= clicks %></span>
+    <div id='time-range' class='button' title='Select a time range'>
+	Past 24 hours
+	<ul>
+	    <li value='0'>Total</li>
+	    <li value='1'>Past month</li>
+	    <li value='2'>Past week</li>
+	    <li value='3' class='selected'>Past 24 hours</li>
+	    <li value='4'>Past hour</li>
+	</ul>
+    </div>
     <h1 title='Short link'>wdR.im/<%= id %></h1>
+    <button class='button' id='copy-url' data-copy='http://wdr.im/<%= id %>'>Copy</button>
+    <span id='copy-bubble'>Copied link!</span><br />
     <a title='Long link' href='<%= longUrl %>'><%= longUrl %></a>
 </div>
+<div id='map' width='790' height='600'></div>
+<div id='charts'>
+    <div class='chart pie' id='location-chart'>
+	<h2>Countries</h2>
+	<div></div>
+    </div>
+    <div class='chart pie' id='referrer-chart'>
+	<h2>Referrers</h2>
+	<div></div>
+    </div>
+    <div class='chart pie' id='browser-chart'>
+	<h2>Browsers</h2>
+	<div></div>
+    </div>
+    <div class='chart pie' id='os-chart'>
+	<h2>Operating Systems</h2>
+	<div></div>
+    </div>
+</div>
+<script>window.pageID = '<%= id %>';</script>

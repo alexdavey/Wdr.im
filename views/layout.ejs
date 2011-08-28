@@ -2,6 +2,8 @@
 <html>
 <head>
     <title>wdR.im - Link shortening service</title>
+    <link rel='icon' href='/img/favicon.png' type='image/png'/>
+    <link rel='stylesheet' href='/stylesheets/normalize.css'/>
     <link rel='stylesheet' href='/stylesheets/style.css'/>
     <% if (view == 'tracking'){ %>
     <link rel='stylesheet' href='/stylesheets/track.css'/>
@@ -11,13 +13,29 @@
 </head>
 <body>
     <header>
-	<a href='/'>
+	<a href='/' id='logo'>
 	    <img src='/img/logo.png' alt='wdR.im'/>
 	</a>
+        <span class='vote'>Vote button</span>
     </header>
     <div id='color-strip'><div id='color-flash'></div></div>
     <div role='main' id='main'>
 	<%- body %>
+        <div class='clearfix'></div>
     </div>
+    <footer>
+        &copy;2011 wdR.im -
+        <a href='https://github.com/alexdavey'>Alex Davey</a> &
+        <a href='http://twitter.com/PWNbear'>Koen Klaren</a>
+    </footer>
+    <% if (view == 'tracking'){ %>
+    <script src='/js/MooClip.js'></script>
+    <script src='/js/raphael-min.js'></script>
+    <script src='/js/g.raphael-min.js'></script>
+    <script src='/js/g.pie-min.js'></script>
+    <script src='/socket.io/socket.io.js'></script>
+    <script src='/js/track.js'></script>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=true&callback=track.mapsLoaded"></script>
+    <% } %>
 </body>
 </html>
