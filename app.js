@@ -18,6 +18,7 @@ var socketIO = require('socket.io'),
 "use strict";
 
 var charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-=";
+var io;
 
 // =============================================================================
 // |                              Database wrapper							   |
@@ -133,7 +134,7 @@ DB.prototype.streamId = function(shortUrl, data, end) {
 // 	});
 // }
 
-io.sockets.on('connection', function (socket) {
+/*io.sockets.on('connection', function (socket) {
   socket.on('set nickname', function (name) {
     socket.set('nickname', name, function () {
       socket.emit('ready');
@@ -145,7 +146,7 @@ io.sockets.on('connection', function (socket) {
       console.log('Chat message by ', name);
     });
   });
-});
+});*/
 
 
 // Socket.prototype.push = function(id, data) {
@@ -233,6 +234,21 @@ function getIp(req) {
 	return ipAddress;
 }
 
+function parseIp(ip, callback) {
+    http.get({
+        host:   'www.geoplugin.net',
+        port:   80,
+        path:   '/json.gp?ip=' + ip
+    }, function(res){
+        var geoPlugin = function(data){
+            callback(data.geoplugin_latitude, data.geoplugin_longitude, data.geoplugin_countryName);
+        }
+        exec(JSON.res.body);
+    }).on('error', function(e){
+        throw 'Couldn\'t get location';
+    });
+}
+
 // =============================================================================
 // |                                  Express  								   |
 // =============================================================================
@@ -315,6 +331,11 @@ var db = new DB('localhost', 27017, 'testing', function() {
 	});
 	// io = new Socket(app);
 	app.listen(3000);
+        io = socketIO.listen(app);
+        io.on('id', function(data){
+            console.log(data);
+        });
+        
 	console.log("Express server listening on port %d in %s mode", 
 		app.address().port, app.settings.env);
 });
