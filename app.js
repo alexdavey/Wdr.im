@@ -226,7 +226,7 @@ app.get('/ws', function(req, res) {
 	res.render('websockets', { view : '' });
 });
 
-app.get(/\/([\-\=\_0-9]{1,6})\+/i, function(req, res) {
+app.get(/\/([\-\=\_0-9a-z]{1,6})\+/i, function(req, res) {
 	res.render('track', {
 		id : req.params[0],
 		longUrl : 'http://google.com',
@@ -236,7 +236,7 @@ app.get(/\/([\-\=\_0-9]{1,6})\+/i, function(req, res) {
 });
 
 // API routes
-app.get(/\/([\-\=\_0-9]{1,6})/i, function(req, res) {
+app.get(/\/([\-\=\_0-9a-z]{1,6})/i, function(req, res) {
 	var id = req.params[0],
 		data = parseData(req);
 	console.log(req.headers['user-agent']);
