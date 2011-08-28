@@ -22,7 +22,7 @@ var track = new (function(){
     
     this.initCharts = function(){
 	$('charts').getChildren().each(function(chart){
-	    chart.store('r', Raphael(chart));
+	    chart.store('r', Raphael(chart.getElement('div'), 392, 222));
 	});
     }
     

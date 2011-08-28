@@ -1,12 +1,19 @@
 <div id='main-info'>
     <span id='clicks' title='Clicks'><%= clicks %></span>
+    <ul class='button select'>
+	<li class='active'>Total</li>
+	<li>Past month</li>
+	<li>Past week</li>
+	<li>Past 24 hours</li>
+	<li>Past hour</li>
+    </ul>
     <h1 title='Short link'>wdR.im/<%= id %></h1>
     <a title='Long link' href='<%= longUrl %>'><%= longUrl %></a>
 </div>
 <div id='map' width='790' height='600'></div>
 <div id='charts'>
-    <div class='chart pie' id='location-chart'></div>
-    <div class='chart pie' id='referrer-chart'></div>
-    <div class='chart pie' id='browser-chart'></div>
-    <div class='chart pie' id='os-chart'></div>
+    <div class='chart pie' id='location-chart'><h2>Countries</h2><div></div></div>
+    <div class='chart pie' id='referrer-chart'><h2>Referrers</h2><div></div></div>
+    <div class='chart pie' id='browser-chart'><h2>Browsers</h2><div></div></div>
+    <div class='chart pie' id='os-chart'><h2>Operating Systems</h2><div></div></div>
 </div>
