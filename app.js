@@ -98,7 +98,15 @@ DB.prototype.validateClick = function(obj) {
 	});
 };
 
-DB.streamId = function(shortUrl, data, end) {
+DB.prototype.aggregate = function(id) {
+	db.collection('links', function(collection) {
+		collection.findOne({ shortUrl : id }, function(err, item) {
+			callback(item);		
+		});
+	});
+};
+
+DB.prototype.streamId = function(shortUrl, data, end) {
 	this.collection('links', function(collection) {
 		var stream = collection.find({ shortUrl : shortUrl }).streamRecords();
 		stream.on('data', data);
@@ -116,6 +124,9 @@ function Socket(app) {
 	this.io = socketIO.listen(app);
 	this.io.sockets.on('connection', function(socket) {
 		socket.on('id', function(data) {
+			db.aggregate(data, function(item) {
+				socket.emit(JSON.stringify(item));
+			});
 			that.addClient(data, socket);
 		});
 	});
@@ -172,13 +183,13 @@ function parseUrl(req) {
 }
 
 function parseUA(req) {
-	var s = navigator.userAgent.toLowerCase();
+	var s = req.headers['user-agent'].toLowerCase();
 	var match = /(webkit)[ \/]([\w.]+)/.exec(s) ||
 		/(opera)(?:.*version)?[ \/]([\w.]+)/.exec(s) ||
 		/(msie) ([\w.]+)/.exec(s) ||
 		!/compatible/.test(s) && /(mozilla)(?:.*? rv:([\w.]+))?/.exec(s) || [];
-	var os = /(Mac)/.exec(s) || /(Win)/.exec(s) || 
-			 /(iPhone)/.exec(s) || /(linux)/.exec(s) || [];
+	var os = /(mac)/.exec(s) || /(win)/.exec(s) || 
+			 /(iphone)/.exec(s) || /(linux)/.exec(s) || [];
 	return { 
 		os : match[0] || 'Other',
 		browser : match[1] || 'Other'
@@ -239,11 +250,7 @@ app.get('/', function(req, res) {
 	});
 });
 
-app.get('/ws', function(req, res) {
-	res.render('websockets', { view : '' });
-});
-
-app.get(/\/([\-\=\_0-9a-z]{1,6})\+/i, function(req, res) {
+app.get(/\/([\-\=0-9]{1,6})\+/i, function(req, res) {
 	res.render('track', {
 		id : req.params[0],
 		longUrl : 'http://google.com',
@@ -253,7 +260,7 @@ app.get(/\/([\-\=\_0-9a-z]{1,6})\+/i, function(req, res) {
 });
 
 // API routes
-app.get(/\/([\-\=\_0-9a-z]{1,6})/i, function(req, res) {
+app.get(/\/([\-\=0-9]{1,6})/i, function(req, res) {
 	var id = req.params[0],
 		data = parseData(req);
 	db.getLongUrl(id, function(url) { res.redirect(url) });
@@ -291,7 +298,7 @@ var db = new DB('localhost', 27017, 'testing', function() {
 		});
 	});
 	io = new Socket(app);
-	app.listen(80);
+	app.listen(3000);
 	console.log("Express server listening on port %d in %s mode", 
 		app.address().port, app.settings.env);
 });
