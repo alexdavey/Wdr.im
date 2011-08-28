@@ -103,16 +103,17 @@ var track = new (function(){
         
         socket.on('message', function(data){
             data = JSON.decode(data);
-            data = {
-                
-            };
+            
+            // Add a marker on the map
+            track.map.addMarker(data.lat, data.lng);
+            
         });
     });
 });
 
 // Debugging & looks awesome :)
 track.setChart('location', {
-    'United States'     : 60,
+    'United States'     : 100,
     'United Kingdom'    : 20,
     'Netherlands'       : 10,
     'Candy Mountain'    : 10
