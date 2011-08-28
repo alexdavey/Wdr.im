@@ -137,5 +137,4 @@ track.setChart('os', {
     'Mac OSX'   : 20,
     'Windows'   : 70,
     'Ubuntu'    : 10
->>>>>>> cacc0e40857b382bca8c8ec5fabb352380347225
 });
