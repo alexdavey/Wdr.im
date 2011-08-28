@@ -2,11 +2,12 @@
 // |                               Dependencies								   |
 // =============================================================================
 
-var express  = require('express'),
-	socketIo = require('socket.io'),
+var socketIo = require('socket.io'),
+	express  = require('express'),
 	mongo = require('mongodb'),
 	redis = require('redis'),
-	nko   = require('nko')('VCPo4hn9tsswPvB7');
+	nko   = require('nko')('VCPo4hn9tsswPvB7'),
+	_ = require('underscore');
 
 
 // =============================================================================
@@ -22,7 +23,7 @@ var id = 1,
 // |                              Database wrapper							   |
 // =============================================================================
 
-function db(path, port, dbName) {
+function DB(path, port, dbName) {
 	this.dbName = dbName;
 	this.mongo = new mongo.Server(path, port, { auto_reconnect : true });
 	this.db = new mongo.Db(dbName, this.mongo);
@@ -33,64 +34,58 @@ function db(path, port, dbName) {
 		clicks : [],
 		browser : [],
 		refferrer : []
-	}
+	};
 }
 
-db.prototype.insertLink = function(urls) {
+DB.prototype.insertLink = function(urls) {
 	if (!this.validateLink(urls)) throw err;
-	var obj = merge(this.skeleton, urls);
+	var obj = _.extend(urls, this.skeleton);
+	this.collection('links', function(collection) {
+		collection.insert(obj, { safe : true }, handleError);
+	});
+};
+
+DB.prototype.pushLink = function(shortUrl, obj) {
+	this.colection('links', function(collection) {
+		collection.update({ shortUrl : shortUrl }, this.createLinkUpdateObj(obj));
+	});
+};
+
+DB.prototype.collection = function(name, fn) {
+	var that = this;
 	this.db.open(function(err, db) {
 		if (err) throw err;
-		db.collection('links', function(collection) {
-			collection.insert(obj, { safe : true }, function(err) {
-				throw err;
-			});
+		db.collection(name, function(err, collection) {
+			if (err) throw err;
+			fn.call(that, collection, db);
 		});
 	});
 };
 
-db.prototype.pushLink = function(shortUrl, obj) {
-	this.db.open(function(err, db) {
-		db.collection('links', function(collection) {
-			collection.update({ shortUrl : shortUrl },
-				this.createLinkUpdateObj(obj));
-		});
-	});
-};
-
-db.prototype.createLinkUpdateObj = function(update) {
+DB.prototype.createLinkUpdateObj = function(update) {
 	var updateObj = {};
-	this.update.forEach(function(value, key) {
+	_.each(this.update, function(value, key) {
 		updateObj[key] = { $push : { key : value } };
 	});
 	return updateObj;
 };
 
-db.prototype.validateLink = function(link) {
-	return 'shortUrl' in link && 'longUrl' in link;
+DB.prototype.validateLink = function(link) {
+	return 'shortUrl' in link && 'longUrl' in link && 'date' in link;
 };
 
-db.prototype.validateClick = function(obj) {
-	return ([].every.call(obj, function(value, key) {
+DB.prototype.validateClick = function(obj) {
+	return [].every.call(obj, function(value, key) {
 		return key in this.skeleton;
-	}));
+	});
 };
-
 
 // =============================================================================
 // |                              Utility methods							   |
 // =============================================================================
 
-function merge(obj1, obj2) {
-	var obj = clone(obj1);
-	obj2.forEach(function(value, key) { obj[key] = value })
-	return obj;
-}
-
-function clone(obj) {
-	var result = {};
-	obj.forEach(function(value, key) { new[key] = value });
-	return result;
+function handleError(err) {
+	throw err;
 }
 
 function unique(charset, number) {
@@ -108,7 +103,7 @@ function getIp(req) {
 		var forwardedIps = forwardedIpsStr.split(',');
 		ipAddress = forwardedIps[0];
 	}
-		if (!ipAddress) {
+	if (!ipAddress) {
 		ipAddress = req.connection.remoteAddress;
 	}
 	return ipAddress;
@@ -118,7 +113,8 @@ function getIp(req) {
 // |                                  Express  								   |
 // =============================================================================
 
-var app = module.exports = express.createServer();
+var app = module.exports = express.createServer(),
+	db = new DB('localhost', 27017, 'wdr');
 
 app.configure(function() {
 	app.set('views', __dirname + '/views');
@@ -129,17 +125,18 @@ app.configure(function() {
 	app.use(express.static(__dirname + '/public'));
 });
 
-app.configure('development', function(){
+app.configure('development', function() {
 	app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
 });
 
-app.configure('production', function(){
+app.configure('production', function() {
 	app.use(express.errorHandler()); 
 });
 
 // =============================================================================
 // |                                 Routes  								   |
 // =============================================================================
+
 app.get('/', function(req, res) {
 	res.render('index', {
 		view : 'index'
@@ -149,9 +146,9 @@ app.get('/', function(req, res) {
 app.get(/\/([\-\=\_0-9]{1,6})\+/, function(req, res) {
 	res.render('track', {
 		id : req.params[0],
-		longUrl : 'google.com',
+		longUrl : 'http://google.com',
 		view : 'tracking',
-		clicks : 1234
+		clicks : '000000001234'
 	});
 });
 
@@ -161,12 +158,14 @@ app.get(/\/([\-\=\_0-9]{1,6})/, function(req, res) {
 });
 
 app.post(/\/data/, function(req, res) {
-	if (!req.body.url) res.send('Error, Error!');
+	if (!req.body.url) throw 'Error, Error!';
+	console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!' + req.body.url);
 	var shortUrl = unique(charset, id++);
 	res.redirect('/' + shortUrl + '+');
-	db.setId(shortUrl, {
+	db.insertLink({
 		longUrl : req.body.url,
-		startTime : new Date()
+		shortUrl : shortUrl,
+		date : new Date()
 	});
 });
 
