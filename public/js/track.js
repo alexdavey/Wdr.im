@@ -97,10 +97,9 @@ var track = new (function(){
     });
     
     var hits = [];
-    var socket = new io.Socket();
-    socket.connect();
+    var socket = io.connect(location.domain);
     socket.on('connect', function(){
-        socket.send(JSON.encode({id:window.pageID}));
+        socket.emit('id', window.pageID);
         
         socket.on('message', function(data){
             data = JSON.decode(data);
@@ -130,7 +129,7 @@ track.setChart('browser', {
     'FireFox'           : 30,
     'Safari'            : 10,
     'Opera'             : 7,
-    'Internet Explorer' : 13,
+    'Internet Explorer' : 13
 });
 
 track.setChart('os', {
