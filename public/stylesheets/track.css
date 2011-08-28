@@ -46,7 +46,7 @@ header {
     padding: 3px 10px;
 }
 
-#charts .chart, #clicks, #time-range {
+#charts .chart, #clicks, #time-range, #map {
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
     border-radius: 3px;
@@ -111,12 +111,19 @@ header {
 #map {
     margin: 10px 0;
     height: 550px;
+    text-shadow: none;
+    border-color: #363636;
+}
+
+/*#map {
+    margin: 10px 0;
+    height: 550px;
     border: 5px solid #fff;
     -webkit-box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.5);
     -moz-box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.5);
     box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.5);
     text-shadow: none;
-}
+}*/
 
 #charts {
     margin: 0 -10px;
