@@ -97,7 +97,7 @@ var track = new (function(){
     });
     
     var hits = [];
-    var socket = socket.connect();
+    var socket = io.connect(location.domain);
     socket.on('connect', function(){
         socket.emit('id', window.pageID);
         
