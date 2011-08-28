@@ -77,6 +77,7 @@ app.get(/\/([0-9a-z\_\-\=]{1, 6})\+/i, function(req, res) {
 	res.render('track', {
 		id : req.params[0]
 	});
+});
 
 app.get(/\/([0-9a-z\_\-\=]{1,6})\+/i, function(req, res) {
     res.render('track', {

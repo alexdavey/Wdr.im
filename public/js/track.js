@@ -1,5 +1,11 @@
 var track = new (function(){
     
+    var trOpen = false;
+    $('time-range').addEvent('change', function(e){
+        console.log(this.value);
+    });
+    
+    // Callback function for the Google Maps API
     this.mapsLoaded = function(){
 	var myLatlng = new google.maps.LatLng(20, 0);
 	var myOptions = {
@@ -11,6 +17,8 @@ var track = new (function(){
     }
     
     this.map = {};
+    
+    // Add a marker to the map
     this.map.addMarker = function(lat, lng){
 	var latlng = new google.maps.LatLng(lat, lng);
 	var marker = new google.maps.Marker({
@@ -20,16 +28,16 @@ var track = new (function(){
         });
     }
     
-    this.initCharts = function(){
-	$('charts').getChildren().each(function(chart){
-	    chart.store('r', Raphael(chart.getElement('div'), 392, 222));
-	});
-    }
+    // Initiate the charts
+    $('charts').getChildren().each(function(chart){
+        chart.store('r', Raphael(chart.getElement('div'), 392, 212));
+    });
     
+    // Set chart data
     this.setChart = function(name, data){
 	var r = $(name + '-chart').retrieve('r');
         r.clear();
-	var pie = r.g.piechart(110, 110, 90, Object.values(data), {legend:Object.values(Object.map(data, function(val, key){return '%% - ' + key}))});
+	var pie = r.g.piechart(105, 105, 90, Object.values(data), {legend:Object.values(Object.map(data, function(val, key){return '%% - ' + key}))});
         pie.hover(function () {
             this.sector.stop();
             this.sector.scale(1.1, 1.1, this.cx, this.cy);
@@ -49,7 +57,7 @@ var track = new (function(){
     
 });
 
-track.initCharts();
+// Debugging & looks awesome :)
 track.setChart('location', {
     'United States'     : 60,
     'United Kingdom'    : 20,

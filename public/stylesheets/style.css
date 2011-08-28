@@ -4,7 +4,8 @@ body {
 }
 
 body,
-input {
+input,
+select {
     font-family: Arial, "Lucida Grande", sans-serif;
     font-size: 14px;
     color: #383838;
@@ -107,37 +108,6 @@ header {
     -webkit-box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.2) inset;
 }
 
-.button.select {
-    margin: 0 5px;
-    min-width: 100px;
-    position: relative;
-}
-
-.button.select:after {
-    width: 15px;
-    height: 26px;
-    padding: 10px 0 0 3px;
-    content: '▼';
-    font-family: arial;
-    font-weight: bold;
-    font-size: 12px;
-    position: absolute;
-    right: 0;
-    top: 0;
-    border-left: 1px solid #ababab;
-}
-
-.button.select li {
-    visibility: hidden;
-    height: 0px;
-    margin: 0 20px 0 0;
-    list-style: none;
-}
-
-.button.select li.active {
-    visibility: visible;
-    height: auto;
-}
 
 #shorten-url { height: 52px }
 
