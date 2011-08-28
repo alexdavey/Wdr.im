@@ -119,59 +119,42 @@ DB.prototype.streamId = function(shortUrl, data, end) {
 // |                            Socket.io wrapper							   |
 // =============================================================================
 
-// function Socket(app) {
-// 	var that = this;
-// 	this.clients = {};
-// 	this.io = socketIO.listen(app);
-// 	this.io.sockets.on('connection', function(socket) {
-// 		socket.on('id', function(data) {
-// 			db.aggregate(data, function(item) {
-// 				socket.emit(JSON.stringify(item));
-// 			});
-// 			// that.addClient(data, socket);
-// 		});
-// 	});
-// }
+function Socket(app) {
+	var that = this;
+	this.clients = {};
+	this.io = socketIO.listen(app);
+	this.io.sockets.on('connection', function(socket) {
+		socket.on('id', function(data) {
+			db.aggregate(data, function(item) {
+				console.dir(item);
+				socket.emit('message', JSON.stringify(item));
+				console.log('sent Data');
+			});
+			that.addClient(data, socket);
+		});
+	});
+}
 
-io.sockets.on('connection', function (socket) {
-  socket.on('set nickname', function (name) {
-    socket.set('nickname', name, function () {
-      socket.emit('ready');
-    });
-  });
+Socket.prototype.push = function(id, data) {
+	if (id in this.clients)
+		this.clients[id].emit('update', JSON.stringify(data));
+};
 
-  socket.on('msg', function () {
-    socket.get('nickname', function (err, name) {
-      console.log('Chat message by ', name);
-    });
-  });
-});
+Socket.prototype.addClient = function(id, socket) {
+	if (id in this.clients) {
+		this.clients[id].push(socket);
+	} else {
+		this.clients[id] = [socket];
+	}
+};
 
+Socket.prototype.removeClient = function(id) {
+	if (id in this.clients) delete this.clients[id];
+};
 
-// Socket.prototype.push = function(id, data) {
-// 	console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++Client connect attempted');
-// 	if (id in this.clients)
-// 		this.clients[id].emit('update', JSON.stringify(data));
-// 	else
-// 		console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++not in this.clients');
-// };
-// 
-// Socket.prototype.addClient = function(id, socket) {
-// 	console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++client connected');
-// 	if (id in this.clients) {
-// 		this.clients[id].push(socket);
-// 	} else {
-// 		this.clients[id] = [socket];
-// 	}
-// };
-// 
-// Socket.prototype.removeClient = function(id) {
-// 	if (id in this.clients) delete this.clients[id];
-// };
-// 
-// Socket.prototype.clientConnected = function(id) {
-// 	return id in this.clients;
-// };
+Socket.prototype.clientConnected = function(id) {
+	return id in this.clients;
+};
 
 // =============================================================================
 // |                              Utility methods							   |
@@ -313,7 +296,7 @@ var db = new DB('localhost', 27017, 'testing', function() {
 			console.dir(item);
 		});
 	});
-	// io = new Socket(app);
+	io = new Socket(app);
 	app.listen(3000);
 	console.log("Express server listening on port %d in %s mode", 
 		app.address().port, app.settings.env);
