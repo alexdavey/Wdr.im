@@ -37,6 +37,14 @@ header {
     margin: 0;
 }
 
+#main-info a {
+    display: inline-block;
+    width: 300px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
 #copy-url {
     position: relative;
     z-index: 10;
@@ -46,7 +54,7 @@ header {
     padding: 3px 10px;
 }
 
-#charts .chart, #clicks, #time-range, #map {
+#charts .chart, #clicks, #map {
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
     border-radius: 3px;
@@ -73,16 +81,80 @@ header {
 
 #time-range {
     vertical-align: top;
-    height: 26px;
+    height: 16px;
+    width: 150px;
     float: right;
-    margin: 10px 10px 0;
+    margin: 9px 10px 0;
+    padding: 5px 0 5px 10px;
+    position: relative;
+    z-index: 30;
     
-    -webkit-border-top-right-radius: 0px;
-    -webkit-border-bottom-right-radius: 0px;
-    -moz-border-radius-topright: 0px;
-    -moz-border-radius-bottomright: 0px;
-    border-top-right-radius: 0px;
-    border-bottom-right-radius: 0px;
+    font-size: 14px;
+}
+
+#time-range:after {
+    float: right;
+    height: 16px;
+    padding: 5px 5px;
+    margin-left: 5px;
+    content: '▼';
+    position: relative;
+    top: -5px;
+    border-left: 1px solid #ababab;
+}
+
+#time-range ul {
+    width: 160px;
+    position: absolute;
+    z-index: 20;
+    display: none;
+    padding: 0;
+    margin: 5px 0 0 -11px;
+    background: #f1f1f1;
+    border: 1px solid #ababab;
+    
+    -webkit-border-bottom-right-radius: 3px;
+    -webkit-border-bottom-left-radius: 3px;
+    -moz-border-radius-bottomright: 3px;
+    -moz-border-radius-bottomleft: 3px;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    
+    -webkit-box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.2);
+}
+
+#time-range li {
+    list-style: none;
+    padding: 5px 0 5px 10px;
+    border-top: 1px solid #F7F7F7;
+    border-bottom: 1px solid #ababab;
+    font-weight: normal;
+}
+
+#time-range li.selected {
+    font-weight: bold;
+}
+
+#time-range li:hover {
+    background: #dfdfdf;
+}
+
+#time-range li:last-child {
+    border-bottom: none;
+}
+
+#time-range.open {
+    -webkit-border-bottom-right-radius: 0;
+    -webkit-border-bottom-left-radius: 0;
+    -moz-border-radius-bottomright: 0;
+    -moz-border-radius-bottomleft: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    -webkit-box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.2);
+}
+
+#time-range.open ul {
+    display: block;
 }
 
 #clicks {
@@ -114,16 +186,6 @@ header {
     text-shadow: none;
     border-color: #363636;
 }
-
-/*#map {
-    margin: 10px 0;
-    height: 550px;
-    border: 5px solid #fff;
-    -webkit-box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.5);
-    -moz-box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.5);
-    box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.5);
-    text-shadow: none;
-}*/
 
 #charts {
     margin: 0 -10px;

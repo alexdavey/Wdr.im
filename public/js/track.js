@@ -1,8 +1,28 @@
 var track = new (function(){
     
     // Change the time range
-    $('time-range').addEvent('change', function(e){
-        console.log(this.value);
+    var tOpen = false;
+    var time = 3;
+    window.addEvent('mousedown', function(e){       
+        if (e.target !== $('time-range') && !e.target.getParent('#time-range')){
+            tOpen = false;
+            $('time-range').removeClass('open');
+        }
+    });
+    $('time-range').addEvent('click', function(e){
+        if (e.target != this){
+            time = e.target.value;
+            e.target.getSiblings('.selected')[0].removeClass('selected');
+            e.target.addClass('selected');
+            var ul = this.getChildren('ul')[0];
+            this.set('text', e.target.innerText);
+            ul.inject(this, 'bottom');
+        }
+        tOpen = !tOpen;
+        if (tOpen)
+            this.addClass('open');
+        else
+            this.removeClass('open');
     });
     
     // Callback function for the Google Maps API
