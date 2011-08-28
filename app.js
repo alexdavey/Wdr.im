@@ -24,9 +24,9 @@ var id = 1,
 // =============================================================================
 
 function DB(path, port, dbName) {
+	var that = this;
 	this.dbName = dbName;
-	this.mongo = new mongo.Server(path, port, { auto_reconnect : true });
-	this.db = new mongo.Db(dbName, this.mongo);
+	this.server = new mongo.Server(path, port, { auto_reconnect : true });
 	this.skeleton = {
 		ip : [],
 		os : [],
@@ -35,6 +35,12 @@ function DB(path, port, dbName) {
 		browser : [],
 		refferrer : []
 	};
+	var DB = new mongo.Db(dbName, this.server);
+	DB.open(function(err, db) {
+		if (err) throw err;
+		that.db = db;
+		init();
+	});
 }
 
 DB.prototype.insertLink = function(urls) {
@@ -46,19 +52,16 @@ DB.prototype.insertLink = function(urls) {
 };
 
 DB.prototype.pushLink = function(shortUrl, obj) {
-	this.colection('links', function(collection) {
+	this.collection('links', function(collection) {
 		collection.update({ shortUrl : shortUrl }, this.createLinkUpdateObj(obj));
 	});
 };
 
 DB.prototype.collection = function(name, fn) {
 	var that = this;
-	this.db.open(function(err, db) {
+	this.db.createCollection(name, function(err, collection) {
 		if (err) throw err;
-		db.collection(name, function(err, collection) {
-			if (err) throw err;
-			fn.call(that, collection, db);
-		});
+		fn.call(that, collection, db);
 	});
 };
 
@@ -75,7 +78,7 @@ DB.prototype.validateLink = function(link) {
 };
 
 DB.prototype.validateClick = function(obj) {
-	return [].every.call(obj, function(value, key) {
+	return _.every(obj, function(value, key) {
 		return key in this.skeleton;
 	});
 };
@@ -85,7 +88,7 @@ DB.prototype.validateClick = function(obj) {
 // =============================================================================
 
 function handleError(err) {
-	throw err;
+	if (err) throw err;
 }
 
 function unique(charset, number) {
@@ -159,20 +162,22 @@ app.get(/\/([\-\=\_0-9]{1,6})/, function(req, res) {
 
 app.post(/\/data/, function(req, res) {
 	if (!req.body.url) throw 'Error, Error!';
-	console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!' + req.body.url);
+	console.log(new Array(200).join('='));
 	var shortUrl = unique(charset, id++);
-	res.redirect('/' + shortUrl + '+');
 	db.insertLink({
 		longUrl : req.body.url,
 		shortUrl : shortUrl,
 		date : new Date()
 	});
+	res.redirect('/' + shortUrl + '+');
 });
 
 
 // =============================================================================
 // |                                 Start  								   |
 // =============================================================================
-app.listen(3000);
-console.log("Express server listening on port %d in %s mode", 
-	app.address().port, app.settings.env);
+function init() {
+	app.listen(3000);
+	console.log("Express server listening on port %d in %s mode", 
+		app.address().port, app.settings.env);
+}
