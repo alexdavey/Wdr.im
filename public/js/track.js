@@ -96,7 +96,12 @@ var track = new (function(){
         });
     });
     
-    var hits = [];
+    var hits = {
+        location    : {},
+        referrer    : {},
+        browser     : {},
+        os          : {}
+    };
     var socket = io.connect(location.domain);
     socket.on('connect', function(){
         socket.emit('id', window.pageID);
@@ -107,6 +112,31 @@ var track = new (function(){
             // Add a marker on the map
             track.map.addMarker(data.lat, data.lng);
             
+            // Add a hit to the country
+            if (!hits.location[data.country])
+                hits.location[data.country] = 0;
+            hits.location[data.country]++;
+            track.setChart('location', hits.location);
+            
+            // Add a hit to the referrer
+            if (!hits.referrer[data.referrer])
+                hits.referrer[data.referrer] = 0;
+            hits.referrer[data.referrer]++;
+            track.setChart('referrer', hits.referrer);
+            
+            // Add a hit to the browser
+            if (!hits.browser[data.browser])
+                hits.browser[data.browser] = 0;
+            hits.browser[data.browser]++;
+            track.setChart('browser', hits.browser);
+            
+            // Add a hit to the os
+            if (!hits.os[data.os])
+                hits.os[data.os] = 0;
+            hits.os[data.os]++;
+            track.setChart('os', hits.os);
+            
+            $('clicks').set('text', hits.location.length);
         });
     });
 });
