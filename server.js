@@ -264,7 +264,9 @@ app.get(/\/([\-\=0-9]{1,6})/i, function(req, res) {
 		data = parseData(req);
 	db.getLongUrl(id, function(url) { res.redirect(url) });
 	db.pushLink(id, data);
-	if (io.clientConnected(id)) io.push(id, data);
+	if (io.clientConnected(id)) {
+		io.push(id, data);
+	}
 });
 
 app.post(/\/data/, function(req, res) {
@@ -297,7 +299,7 @@ var db = new DB('localhost', 27017, 'testing', function() {
 		});
 	});
 	io = new Socket(app);
-	app.listen(3000);
+	app.listen(80);
 	console.log("Express server listening on port %d in %s mode", 
 		app.address().port, app.settings.env);
 });
