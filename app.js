@@ -17,8 +17,7 @@ var socketIO = require('socket.io'),
 
 "use strict";
 
-var id = 1,
-	charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-=";
+var charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-=";
 
 // =============================================================================
 // |                              Database wrapper							   |
@@ -48,6 +47,9 @@ DB.prototype.insertLink = function(urls) {
 	var obj = _.extend(urls, this.skeleton);
 	this.collection('links', function(collection) {
 		collection.insert(obj, { safe : true }, handleError);
+	});
+	this.collection('stats', function(collection) {
+		collection.update({}, { $inc : { maxId : 1 } });
 	});
 };
 
@@ -121,7 +123,7 @@ function Socket(app) {
 }
 
 Socket.prototype.push = function(id, data) {
-	this.clients[id].socket.emit('update', data);
+	this.clients[id].socket.emit('update', JSON.stringify(data));
 };
 
 Socket.prototype.addClient = function(id, socket) {
@@ -225,9 +227,11 @@ app.get(/\/([\-\=\_0-9]{1,6})\+/i, function(req, res) {
 
 // API routes
 app.get(/\/([\-\=\_0-9]{1,6})/i, function(req, res) {
-	var id = req.params[0];
+	var id = req.params[0],
+		data = parseData(req);
 	db.getLongUrl(id, function(url) { res.redirect(url) });
-	db.pushLink(id, parseData(req));
+	db.pushLink(id, data);
+	if (io.clientConnected(id)) io.push(id, data);
 });
 
 app.post(/\/data/, function(req, res) {
@@ -247,8 +251,22 @@ app.post(/\/data/, function(req, res) {
 // |                                 Start  								   |
 // =============================================================================
 
-var io;
-var db = new DB('localhost', 27017, 'abc', function() {
+var io, id;
+var db = new DB('localhost', 27017, 'wdrim', function() {
+	db.collection('stats', function(collection) {
+		collection.findOne({}, function(err, item) {
+			if (err) throw err; 
+			if (item && item.maxId) {
+				id = (item && item.maxId) || 1;
+				console.log('id not inserted');
+			} else {
+				collection.insert({ maxId : 1 });
+				console.log('id inserted');
+			}
+			console.dir(item);
+			console.log('id = ' + id);
+		});
+	});
 	io = new Socket(app);
 	app.listen(3000);
 	console.log("Express server listening on port %d in %s mode", 
