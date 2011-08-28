@@ -1,5 +1,5 @@
 {
-    "name" : "application-name"
+    "name" : "wdr-im"
   , "version" : "0.0.1"
   , "start" : "app.js"
   , "private" : true
