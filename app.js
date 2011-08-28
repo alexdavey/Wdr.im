@@ -155,9 +155,12 @@ function handleError(err) {
 }
 
 function parseData(req) {
+	var ua = parseUA(req);
 	return {
+		browser : ua.browser,
 		ip : getIp(req),
 		time : new Date(),
+		os : ua.os
 	};
 }
 
@@ -166,6 +169,20 @@ function parseUrl(req) {
 	var url = req.body.url;
 	if (url.indexOf('http://') !== -1) url = url.substring(7);
 	return url;
+}
+
+function parseUA(req) {
+	var s = navigator.userAgent.toLowerCase();
+	var match = /(webkit)[ \/]([\w.]+)/.exec(s) ||
+		/(opera)(?:.*version)?[ \/]([\w.]+)/.exec(s) ||
+		/(msie) ([\w.]+)/.exec(s) ||
+		!/compatible/.test(s) && /(mozilla)(?:.*? rv:([\w.]+))?/.exec(s) || [];
+	var os = /(Mac)/.exec(s) || /(Win)/.exec(s) || 
+			 /(iPhone)/.exec(s) || /(linux)/.exec(s) || [];
+	return { 
+		os : match[0] || 'Other',
+		browser : match[1] || 'Other'
+	};
 }
 
 function unique(charset, number) {
@@ -238,8 +255,7 @@ app.get(/\/([\-\=\_0-9]{1,6})\+/i, function(req, res) {
 // API routes
 app.get(/\/([\-\=\_0-9]{1,6})/i, function(req, res) {
 	var id = req.params[0],
-		data = parseData(req),
-		ua = parseUA(req);
+		data = parseData(req);
 	db.getLongUrl(id, function(url) { res.redirect(url) });
 	db.pushLink(id, data);
 	if (io.clientConnected(id)) io.push(id, data);
@@ -275,7 +291,7 @@ var db = new DB('localhost', 27017, 'testing', function() {
 		});
 	});
 	io = new Socket(app);
-	app.listen(3000);
+	app.listen(80);
 	console.log("Express server listening on port %d in %s mode", 
 		app.address().port, app.settings.env);
 });
