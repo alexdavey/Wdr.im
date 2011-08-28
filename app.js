@@ -13,11 +13,57 @@ var express  = require('express'),
 // |                              The app itself							   |
 // =============================================================================
 
+"use strict";
+
 var id = 1,
 	charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-=";
 
-var db = {
-	setId : function() {return}
+function db(path, port, dbName) {
+	this.dbName = dbName;
+	this.mongo = new mongo.Server(path, port, { auto_reconnect : true });
+	this.db = new mongo.Db(dbName, this.mongo);
+	this.skeleton = {
+		ip : [],
+		os : [],
+		time : [],
+		clicks : [],
+		browser : [],
+		longUrl : '',
+		shortUrl : '',
+		refferrer : []
+	};
+}
+
+db.prototype.insertLink = function(shortUrl, longUrl) {
+	this.db.open(function(err, db) {
+		if (err) throw err;
+		db.collection('links', function(collection) {
+			collection.insert(this.skeleton, { safe : true }, function(err) {
+				throw err;
+			});
+		});
+	});
+}
+
+db.prototype.pushLink = function(obj) {
+	this.db.open(function(err, db) {
+		db.collection('links', function(collection) {
+			collection.update(obj);
+		});
+	});
+}
+
+
+function merge(obj1, obj2) {
+	var obj = clone(obj1);
+	obj2.forEach(function(value, key) { obj[key] = value })
+	return obj;
+}
+
+function clone(obj) {
+	var result = {};
+	obj.forEach(function(value, key) { new[key] = value });
+	return result;
 }
 
 function unique(charset, number) {
