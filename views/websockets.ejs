@@ -1,20 +1,12 @@
-<!doctype html>
-<html>
-  <head>
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-      var socket = io.connect(),
-	  	id = document.getElementById('data');
+<script src="/socket.io/socket.io.js"></script>
+<script>
+	var socket = io.connect();
+	document.body.innerHTML = '';
 
-		socket.on('connection', function () {
-			socket.emit('id', 1);
-			socket.on('partial', function (data) {
-				id.innerHTML += data;
-			});
-		});
-    </script>
-  </head>
-  <body>
-    <ul id="data"></ul>
-  </body>
-</html>
+	socket.emit('id', 1);
+	console.log('connected');
+	socket.on('update', function(data) {
+		console.log('got data');
+		document.body.innerHTML += data;
+	})
+</script>

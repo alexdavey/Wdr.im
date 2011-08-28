@@ -113,20 +113,26 @@ DB.streamId = function(shortUrl, data, end) {
 // =============================================================================
 
 function Socket(app) {
+	var that = this;
 	this.clients = {};
 	this.io = socketIO.listen(app);
 	this.io.sockets.on('connection', function(socket) {
 		socket.on('id', function(data) {
-			this.addClient(data, socket);
+			that.addClient(data, socket);
 		});
 	});
 }
 
 Socket.prototype.push = function(id, data) {
-	this.clients[id].socket.emit('update', JSON.stringify(data));
+	console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++Client connect attempted');
+	if (id in this.clients)
+		this.clients[id].emit('update', JSON.stringify(data));
+	else
+		console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++not in this.clients');
 };
 
 Socket.prototype.addClient = function(id, socket) {
+	console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++client connected');
 	if (id in this.clients) {
 		this.clients[id].push(socket);
 	} else {
@@ -135,8 +141,7 @@ Socket.prototype.addClient = function(id, socket) {
 };
 
 Socket.prototype.removeClient = function(id) {
-	if (id in this.clients)
-		delete this.clients[id];
+	if (id in this.clients) delete this.clients[id];
 };
 
 Socket.prototype.clientConnected = function(id) {
@@ -156,6 +161,13 @@ function parseData(req) {
 		ip : getIp(req),
 		time : new Date(),
 	};
+}
+
+function parseUrl(req) {
+	if (!req.body.url) throw 'Invalid URL';
+	var url = req.body.url;
+	if (url.indexOf('http://') !== -1) url = url.subString(7);
+	return url;
 }
 
 function unique(charset, number) {
@@ -235,9 +247,8 @@ app.get(/\/([\-\=\_0-9]{1,6})/i, function(req, res) {
 });
 
 app.post(/\/data/, function(req, res) {
-	if (!req.body.url) throw 'Error, Error!';
-	console.log(new Array(200).join('='));
-	var shortUrl = unique(charset, id++);
+	var longUrl = parseUrl(req),
+		shortUrl = unique(charset, id++);
 	res.redirect('/' + shortUrl + '+');
 	db.insertLink({
 		longUrl : req.body.url,
@@ -258,13 +269,10 @@ var db = new DB('localhost', 27017, 'wdrim', function() {
 			if (err) throw err; 
 			if (item && item.maxId) {
 				id = (item && item.maxId) || 1;
-				console.log('id not inserted');
 			} else {
 				collection.insert({ maxId : 1 });
-				console.log('id inserted');
 			}
 			console.dir(item);
-			console.log('id = ' + id);
 		});
 	});
 	io = new Socket(app);
