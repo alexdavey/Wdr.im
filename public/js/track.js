@@ -112,31 +112,37 @@ var track = new (function(){
             // Add a marker on the map
             track.map.addMarker(data.lat, data.lng);
             
-            // Add a hit to the country
-            if (!hits.location[data.country])
-                hits.location[data.country] = 0;
-            hits.location[data.country]++;
+            data.country.each(function(val, i){
+                // Add a hit to the country
+                if (!hits.location[val])
+                    hits.location[val] = 0;
+                hits.location[val]++;
+            });
             track.setChart('location', hits.location);
             
-            // Add a hit to the referrer
-            if (!hits.referrer[data.referrer])
-                hits.referrer[data.referrer] = 0;
-            hits.referrer[data.referrer]++;
+            data.referrer.each(function(val, i){
+                // Add a hit to the referrer
+                if (!hits.referrer[val])
+                    hits.referrer[val] = 0;
+                hits.referrer[val]++;
+            });
             track.setChart('referrer', hits.referrer);
             
-            // Add a hit to the browser
-            if (!hits.browser[data.browser])
-                hits.browser[data.browser] = 0;
-            hits.browser[data.browser]++;
+            data.browser.each(function(val, i){
+                // Add a hit to the browser
+                if (!hits.browser[val])
+                    hits.browser[val] = 0;
+                hits.browser[val]++;
+            });
             track.setChart('browser', hits.browser);
             
-            // Add a hit to the os
-            if (!hits.os[data.os])
-                hits.os[data.os] = 0;
-            hits.os[data.os]++;
+            data.os.each(function(val, i){
+                // Add a hit to the os
+                if (!hits.os[val])
+                    hits.os[val] = 0;
+                hits.os[val]++;
+            });
             track.setChart('os', hits.os);
-            
-            $('clicks').set('text', hits.location.length);
         });
     });
 });
