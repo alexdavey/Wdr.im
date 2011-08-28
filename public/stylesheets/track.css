@@ -169,6 +169,7 @@ header {
     margin: 4px 0 0;
     min-width: 200px;
     
+    height: 32px;
     font-size: 24px;
     font-weight:bold;
     text-align: right;
