@@ -2,8 +2,9 @@
 // |                               Dependencies								   |
 // =============================================================================
 
-var socketIo = require('socket.io'),
+var socketIO = require('socket.io'),
 	express  = require('express'),
+	request  = require('request'),
 	mongo = require('mongodb'),
 	redis = require('redis'),
 	nko   = require('nko')('VCPo4hn9tsswPvB7'),
@@ -28,12 +29,11 @@ function DB(path, port, dbName, callback) {
 	this.dbName = dbName;
 	this.server = new mongo.Server(path, port, { auto_reconnect : true });
 	this.skeleton = {
-		ip : [],
-		os : [],
-		time : [],
-		clicks : [],
-		browser : [],
-		refferrer : []
+		ip : []
+		/* os : [], */
+		/* time : [], */
+		/* browser : [], */
+		/* refferrer : [] */
 	};
 	var DB = new mongo.Db(dbName, this.server);
 	DB.open(function(err, db) {
@@ -53,7 +53,8 @@ DB.prototype.insertLink = function(urls) {
 
 DB.prototype.pushLink = function(shortUrl, obj) {
 	this.collection('links', function(collection) {
-		collection.update({ shortUrl : shortUrl }, this.createLinkUpdateObj(obj));
+		var patch = this.createLinkUpdateObj(obj);
+		collection.update({ shortUrl : shortUrl }, patch);
 	});
 };
 
@@ -68,7 +69,11 @@ DB.prototype.collection = function(name, fn) {
 DB.prototype.createLinkUpdateObj = function(update) {
 	var updateObj = {};
 	_.each(this.update, function(value, key) {
-		updateObj[key] = { $push : { key : value } };
+		if (key !== 'clicks') {
+			updateObj[key] = { $push : { key : value } };
+		} else {
+			updateObj.clicks = { $inc : { clicks : 1 } };
+		}
 	});
 	return updateObj;
 };
@@ -93,12 +98,62 @@ DB.prototype.validateClick = function(obj) {
 	});
 };
 
+DB.streamId = function(shortUrl, data, end) {
+	this.collection('links', function(collection) {
+		var stream = collection.find({ shortUrl : shortUrl }).streamRecords();
+		stream.on('data', data);
+		stream.on('end', end);
+	});
+};
+
+// =============================================================================
+// |                            Socket.io wrapper							   |
+// =============================================================================
+
+function Socket(app) {
+	this.clients = {};
+	this.io = socketIO.listen(app);
+	this.io.sockets.on('connection', function(socket) {
+		socket.on('id', function(data) {
+			this.addClient(data, socket);
+		});
+	});
+}
+
+Socket.prototype.push = function(id, data) {
+	this.clients[id].socket.emit('update', data);
+};
+
+Socket.prototype.addClient = function(id, socket) {
+	if (id in this.clients) {
+		this.clients[id].push(socket);
+	} else {
+		this.clients[id] = [socket];
+	}
+};
+
+Socket.prototype.removeClient = function(id) {
+	if (id in this.clients)
+		delete this.clients[id];
+};
+
+Socket.prototype.clientConnected = function(id) {
+	return id in this.clients;
+};
+
 // =============================================================================
 // |                              Utility methods							   |
 // =============================================================================
 
 function handleError(err) {
 	if (err) throw err;
+}
+
+function parseData(req) {
+	return {
+		ip : getIp(req),
+		time : new Date(),
+	};
 }
 
 function unique(charset, number) {
@@ -155,6 +210,10 @@ app.get('/', function(req, res) {
 	});
 });
 
+app.get('/ws', function(req, res) {
+	res.render('websockets', { view : '' });
+});
+
 app.get(/\/([\-\=\_0-9]{1,6})\+/i, function(req, res) {
 	res.render('track', {
 		id : req.params[0],
@@ -166,9 +225,9 @@ app.get(/\/([\-\=\_0-9]{1,6})\+/i, function(req, res) {
 
 // API routes
 app.get(/\/([\-\=\_0-9]{1,6})/i, function(req, res) {
-	db.getLongUrl(req.params[0], function(url) {
-		res.redirect(url);
-	});
+	var id = req.params[0];
+	db.getLongUrl(id, function(url) { res.redirect(url) });
+	db.pushLink(id, parseData(req));
 });
 
 app.post(/\/data/, function(req, res) {
@@ -176,7 +235,6 @@ app.post(/\/data/, function(req, res) {
 	console.log(new Array(200).join('='));
 	var shortUrl = unique(charset, id++);
 	res.redirect('/' + shortUrl + '+');
-	console.log('/' + shortUrl + '+');
 	db.insertLink({
 		longUrl : req.body.url,
 		shortUrl : shortUrl,
@@ -189,7 +247,9 @@ app.post(/\/data/, function(req, res) {
 // |                                 Start  								   |
 // =============================================================================
 
+var io;
 var db = new DB('localhost', 27017, 'abc', function() {
+	io = new Socket(app);
 	app.listen(3000);
 	console.log("Express server listening on port %d in %s mode", 
 		app.address().port, app.settings.env);
