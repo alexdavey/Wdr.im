@@ -28,9 +28,9 @@ function DB(path, port, dbName, callback) {
 	this.dbName = dbName;
 	this.server = new mongo.Server(path, port, { auto_reconnect : true, poolSize : 10 });
 	this.skeleton = {
-		ip : []
+		ip : [],
 		/* os : [], */
-		/* time : [], */
+		time : []
 		/* browser : [], */
 		/* refferrer : [] */
 	};
@@ -239,6 +239,8 @@ app.get(/\/([\-\=\_0-9]{1,6})\+/i, function(req, res) {
 app.get(/\/([\-\=\_0-9]{1,6})/i, function(req, res) {
 	var id = req.params[0],
 		data = parseData(req);
+	console.log(req.headers['user-agent']);
+	console.dir(req.headers);
 	db.getLongUrl(id, function(url) { res.redirect(url) });
 	db.pushLink(id, data);
 	if (io.clientConnected(id)) io.push(id, data);
