@@ -10,13 +10,17 @@ var express  = require('express'),
 
 
 // =============================================================================
-// |                              The app itself							   |
+// |                                 Settings   							   |
 // =============================================================================
 
 "use strict";
 
 var id = 1,
 	charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-=";
+
+// =============================================================================
+// |                              Database wrapper							   |
+// =============================================================================
 
 function db(path, port, dbName) {
 	this.dbName = dbName;
@@ -28,31 +32,54 @@ function db(path, port, dbName) {
 		time : [],
 		clicks : [],
 		browser : [],
-		longUrl : '',
-		shortUrl : '',
 		refferrer : []
-	};
+	}
 }
 
-db.prototype.insertLink = function(shortUrl, longUrl) {
+db.prototype.insertLink = function(urls) {
+	if (!this.validateLink(urls)) throw err;
+	var obj = merge(this.skeleton, urls);
 	this.db.open(function(err, db) {
 		if (err) throw err;
 		db.collection('links', function(collection) {
-			collection.insert(this.skeleton, { safe : true }, function(err) {
+			collection.insert(obj, { safe : true }, function(err) {
 				throw err;
 			});
 		});
 	});
-}
+};
 
-db.prototype.pushLink = function(obj) {
+db.prototype.pushLink = function(shortUrl, obj) {
 	this.db.open(function(err, db) {
 		db.collection('links', function(collection) {
-			collection.update(obj);
+			collection.update({ shortUrl : shortUrl },
+				this.createLinkUpdateObj(obj));
 		});
 	});
-}
+};
 
+db.prototype.createLinkUpdateObj = function(update) {
+	var updateObj = {};
+	this.update.forEach(function(value, key) {
+		updateObj[key] = { $push : { key : value } };
+	});
+	return updateObj;
+};
+
+db.prototype.validateLink = function(link) {
+	return 'shortUrl' in link && 'longUrl' in link;
+};
+
+db.prototype.validateClick = function(obj) {
+	return ([].every.call(obj, function(value, key) {
+		return key in this.skeleton;
+	}));
+};
+
+
+// =============================================================================
+// |                              Utility methods							   |
+// =============================================================================
 
 function merge(obj1, obj2) {
 	var obj = clone(obj1);
@@ -93,7 +120,7 @@ function getIp(req) {
 
 var app = module.exports = express.createServer();
 
-app.configure(function(){
+app.configure(function() {
 	app.set('views', __dirname + '/views');
 	app.set('view engine', 'ejs');
 	app.use(express.bodyParser());
@@ -113,7 +140,7 @@ app.configure('production', function(){
 // =============================================================================
 // |                                 Routes  								   |
 // =============================================================================
-app.get('/', function(req, res){
+app.get('/', function(req, res) {
 	res.render('index', {
 		view : 'index'
 	});
