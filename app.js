@@ -26,7 +26,7 @@ var charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-=
 function DB(path, port, dbName, callback) {
 	var that = this;
 	this.dbName = dbName;
-	this.server = new mongo.Server(path, port, { auto_reconnect : true });
+	this.server = new mongo.Server(path, port, { auto_reconnect : true, poolSize : 10 });
 	this.skeleton = {
 		ip : []
 		/* os : [], */
@@ -69,15 +69,13 @@ DB.prototype.collection = function(name, fn) {
 };
 
 DB.prototype.createLinkUpdateObj = function(update) {
-	var updateObj = {};
-	_.each(this.update, function(value, key) {
-		if (key !== 'clicks') {
-			updateObj[key] = { $push : { key : value } };
-		} else {
-			updateObj.clicks = { $inc : { clicks : 1 } };
-		}
-	});
-	return updateObj;
+	return {
+		$push : {
+			ip : update.ip,
+			time : new Date()
+		},
+		$inc : { clicks : 1 }
+	};
 };
 
 DB.prototype.getLongUrl = function(shortUrl, callback) {
@@ -166,7 +164,7 @@ function parseData(req) {
 function parseUrl(req) {
 	if (!req.body.url) throw 'Invalid URL';
 	var url = req.body.url;
-	if (url.indexOf('http://') !== -1) url = url.subString(7);
+	if (url.indexOf('http://') !== -1) url = url.substring(7);
 	return url;
 }
 
@@ -263,7 +261,7 @@ app.post(/\/data/, function(req, res) {
 // =============================================================================
 
 var io, id;
-var db = new DB('localhost', 27017, 'wdrim', function() {
+var db = new DB('localhost', 27017, 'testing', function() {
 	db.collection('stats', function(collection) {
 		collection.findOne({}, function(err, item) {
 			if (err) throw err; 
