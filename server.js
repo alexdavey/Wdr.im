@@ -249,7 +249,7 @@ app.get('/', function(req, res) {
 	});
 });
 
-app.get(/\/([\-\=0-9]{1,6})\+/i, function(req, res) {
+app.get(/\/([\-\=\_0-9a-z]{1,6})\+/i, function(req, res) {
 	res.render('track', {
 		id : req.params[0],
 		longUrl : 'http://google.com',
@@ -259,7 +259,7 @@ app.get(/\/([\-\=0-9]{1,6})\+/i, function(req, res) {
 });
 
 // API routes
-app.get(/\/([\-\=0-9]{1,6})/i, function(req, res) {
+app.get(/\/([\-\=\_0-9a-z]{1,6})/i, function(req, res) {
 	var id = req.params[0],
 		data = parseData(req);
 	db.getLongUrl(id, function(url) { res.redirect(url) });
@@ -299,7 +299,7 @@ var db = new DB('localhost', 27017, 'testing', function() {
 		});
 	});
 	io = new Socket(app);
-	app.listen(80);
+	app.listen(3000);
 	console.log("Express server listening on port %d in %s mode", 
 		app.address().port, app.settings.env);
 });
