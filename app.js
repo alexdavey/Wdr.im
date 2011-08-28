@@ -98,7 +98,15 @@ DB.prototype.validateClick = function(obj) {
 	});
 };
 
-DB.streamId = function(shortUrl, data, end) {
+DB.prototype.aggregate = function(id) {
+	db.collection('links', function(collection) {
+		collection.findOne({ shortUrl : id }, function(err, item) {
+			callback(item);		
+		});
+	});
+};
+
+DB.prototype.streamId = function(shortUrl, data, end) {
 	this.collection('links', function(collection) {
 		var stream = collection.find({ shortUrl : shortUrl }).streamRecords();
 		stream.on('data', data);
@@ -116,6 +124,9 @@ function Socket(app) {
 	this.io = socketIO.listen(app);
 	this.io.sockets.on('connection', function(socket) {
 		socket.on('id', function(data) {
+			db.aggregate(data, function(item) {
+				socket.emit(JSON.stringify(item));
+			});
 			that.addClient(data, socket);
 		});
 	});
@@ -237,10 +248,6 @@ app.get('/', function(req, res) {
 	res.render('index', {
 		view : 'index'
 	});
-});
-
-app.get('/ws', function(req, res) {
-	res.render('websockets', { view : '' });
 });
 
 app.get(/\/([\-\=0-9]{1,6})\+/i, function(req, res) {
