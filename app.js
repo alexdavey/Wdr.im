@@ -61,7 +61,8 @@ app.configure('development', function(){
 });
 
 app.configure('production', function(){
-	app.use(express.errorHandler()); 
+        app.use('/', express.errorHandler({ dump: true, stack: true }));
+	//app.use(express.errorHandler()); 
 });
 
 // =============================================================================
