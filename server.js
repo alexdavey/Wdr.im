@@ -98,10 +98,10 @@ app.post(/\/data/, function(req, res) {
 	});
 });
 
-
 // =============================================================================
 // |                                 Start  								   |
 // =============================================================================
 app.listen(80);
+socketIo.listen(app);
 console.log("Express server listening on port %d in %s mode", 
 	app.address().port, app.settings.env);

@@ -95,6 +95,20 @@ var track = new (function(){
             }
         });
     });
+    
+    var hits = [];
+    var socket = new io.Socket();
+    socket.connect();
+    socket.on('connect', function(){
+        socket.send(JSON.encode({id:window.pageID}));
+        
+        socket.on('message', function(data){
+            data = JSON.decode(data);
+            data = {
+                
+            };
+        });
+    });
 });
 
 // Debugging & looks awesome :)
