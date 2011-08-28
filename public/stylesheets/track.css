@@ -30,6 +30,10 @@ header {
     
 }
 
+#main-info {
+    padding: 20px 0;
+}
+
 #main-info h1 {
     display: inline-block;
     font-size: 25px;
@@ -84,8 +88,8 @@ header {
     height: 16px;
     width: 150px;
     float: right;
-    margin: 9px 10px 0;
-    padding: 5px 0 5px 10px;
+    margin: 4px 10px 0;
+    padding: 10px 0 10px 10px;
     position: relative;
     z-index: 30;
     
@@ -95,11 +99,11 @@ header {
 #time-range:after {
     float: right;
     height: 16px;
-    padding: 5px 5px;
+    padding: 10px 5px;
     margin-left: 5px;
     content: '▼';
     position: relative;
-    top: -5px;
+    top: -10px;
     border-left: 1px solid #ababab;
 }
 
@@ -109,7 +113,7 @@ header {
     z-index: 20;
     display: none;
     padding: 0;
-    margin: 5px 0 0 -11px;
+    margin: 10px 0 0 -11px;
     background: #f1f1f1;
     border: 1px solid #ababab;
     
@@ -162,7 +166,7 @@ header {
     float: right;
     padding: 1px 5px 3px;
     margin: 4px 0 0;
-    min-width: 150px;
+    min-width: 200px;
     
     font-size: 24px;
     font-weight:bold;
@@ -176,8 +180,8 @@ header {
     display: block;
     width: auto;
     content: '';
-    border-top: 1px solid rgba(0, 0, 0, 0.2);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+    border-top: 1px solid rgba(0, 0, 0, 0.15);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 #map {
