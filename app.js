@@ -23,7 +23,7 @@ var id = 1,
 // |                              Database wrapper							   |
 // =============================================================================
 
-function DB(path, port, dbName) {
+function DB(path, port, dbName, callback) {
 	var that = this;
 	this.dbName = dbName;
 	this.server = new mongo.Server(path, port, { auto_reconnect : true });
@@ -39,7 +39,7 @@ function DB(path, port, dbName) {
 	DB.open(function(err, db) {
 		if (err) throw err;
 		that.db = db;
-		init();
+		callback();
 	});
 }
 
@@ -71,6 +71,16 @@ DB.prototype.createLinkUpdateObj = function(update) {
 		updateObj[key] = { $push : { key : value } };
 	});
 	return updateObj;
+};
+
+DB.prototype.getLongUrl = function(shortUrl, callback) {
+	this.collection('links', function(collection) {
+		collection.findOne({ shortUrl : shortUrl }, function(err, item) {
+			if (err) throw err;
+			if (!item) return '/404';
+			callback(item.longUrl);
+		});
+	});
 };
 
 DB.prototype.validateLink = function(link) {
@@ -116,8 +126,7 @@ function getIp(req) {
 // |                                  Express  								   |
 // =============================================================================
 
-var app = module.exports = express.createServer(),
-	db = new DB('localhost', 27017, 'wdr');
+var app = module.exports = express.createServer();
 
 app.configure(function() {
 	app.set('views', __dirname + '/views');
@@ -146,7 +155,7 @@ app.get('/', function(req, res) {
 	});
 });
 
-app.get(/\/([\-\=\_0-9]{1,6})\+/, function(req, res) {
+app.get(/\/([\-\=\_0-9]{1,6})\+/i, function(req, res) {
 	res.render('track', {
 		id : req.params[0],
 		longUrl : 'http://google.com',
@@ -156,28 +165,32 @@ app.get(/\/([\-\=\_0-9]{1,6})\+/, function(req, res) {
 });
 
 // API routes
-app.get(/\/([\-\=\_0-9]{1,6})/, function(req, res) {
-	var id = req.params[0];
+app.get(/\/([\-\=\_0-9]{1,6})/i, function(req, res) {
+	db.getLongUrl(req.params[0], function(url) {
+		res.redirect(url);
+	});
 });
 
 app.post(/\/data/, function(req, res) {
 	if (!req.body.url) throw 'Error, Error!';
 	console.log(new Array(200).join('='));
 	var shortUrl = unique(charset, id++);
+	res.redirect('/' + shortUrl + '+');
+	console.log('/' + shortUrl + '+');
 	db.insertLink({
 		longUrl : req.body.url,
 		shortUrl : shortUrl,
 		date : new Date()
 	});
-	res.redirect('/' + shortUrl + '+');
 });
 
 
 // =============================================================================
 // |                                 Start  								   |
 // =============================================================================
-function init() {
+
+var db = new DB('localhost', 27017, 'abc', function() {
 	app.listen(3000);
 	console.log("Express server listening on port %d in %s mode", 
 		app.address().port, app.settings.env);
-}
+});
