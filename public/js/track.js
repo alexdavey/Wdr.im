@@ -107,6 +107,7 @@ var track = new (function(){
         socket.emit('id', window.pageID);
         
         socket.on('message', function(data){
+			console.dir(data);
             data = JSON.decode(data);
             
             // Add a marker on the map
