@@ -14,6 +14,8 @@ header {
     padding: 4px 8px;
     margin: 4px 0 0;
     -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
 }
 
 #copy-bubble:before {
@@ -39,7 +41,7 @@ header {
 
 #main-info a {
     display: inline-block;
-    width: 300px;
+    max-width: 300px;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
@@ -68,7 +70,6 @@ header {
     box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1),
 		0 0 1px 0 rgba(0, 0, 0, 0.1),
 		0 1px 0 0 #fff inset;
-    
     background: #f2f2f2;
     background: -moz-linear-gradient(top, #f2f2f2 0%, #f7f7f7 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f2f2f2), color-stop(100%,#f7f7f7));
@@ -81,11 +82,11 @@ header {
 
 #time-range {
     vertical-align: top;
-    height: 16px;
+    height: 14px;
     width: 150px;
     float: right;
     margin: 4px 10px 0;
-    padding: 10px 0 10px 10px;
+    padding: 11px 0 11px 10px;
     position: relative;
     z-index: 30;
     
@@ -99,7 +100,7 @@ header {
     margin-left: 5px;
     content: '▼';
     position: relative;
-    top: -10px;
+    top: -11px;
     border-left: 1px solid #ababab;
 }
 
@@ -109,7 +110,7 @@ header {
     z-index: 20;
     display: none;
     padding: 0;
-    margin: 10px 0 0 -11px;
+    margin: 8px 0 0 -11px;
     background: #f1f1f1;
     border: 1px solid #ababab;
     
@@ -121,6 +122,8 @@ header {
     border-bottom-left-radius: 3px;
     
     -webkit-box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.4);
+    -moz-box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.4);
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.4);
 }
 
 #time-range li {
@@ -136,7 +139,7 @@ header {
 }
 
 #time-range li:hover {
-    background: #dfdfdf;
+    background: #E6E6E6;
 }
 
 #time-range li:last-child {
@@ -151,6 +154,8 @@ header {
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
     -webkit-box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.4);
+    -moz-box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.4);
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.4);
 }
 
 #time-range.open ul {

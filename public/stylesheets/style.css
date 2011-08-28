@@ -16,7 +16,7 @@ select {
     clear: both;
 }
 
-a {
+a, a:visited {
     color: #306cbe;
     text-decoration: none;
 }
@@ -94,6 +94,8 @@ header #logo:active {
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f1f1f1', endColorstr='#ebebeb',GradientType=0 );
     background: linear-gradient(top, #f1f1f1 0%,#ebebeb 100%);
     -webkit-box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1), 0 1px 0 0 #fff inset;
+    -moz-box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1), 0 1px 0 0 #fff inset;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1), 0 1px 0 0 #fff inset;
 }
 
 .button:hover {
@@ -109,6 +111,8 @@ header #logo:active {
 
 .button:active {
     -webkit-box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.2) inset;
+    -moz-box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.2) inset;
+    box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.2) inset;
 }
 
 
