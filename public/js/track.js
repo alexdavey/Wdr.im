@@ -37,7 +37,7 @@ var track = new (function(){
     this.setChart = function(name, data){
 	var r = $(name + '-chart').retrieve('r');
         r.clear();
-	var pie = r.g.piechart(105, 105, 90, Object.values(data), {legend:Object.values(Object.map(data, function(val, key){return '%% - ' + key}))});
+	var pie = r.g.piechart(85, 85, 70, Object.values(data), {legend:Object.values(Object.map(data, function(val, key){return '%% - ' + key}))});
         pie.hover(function () {
             this.sector.stop();
             this.sector.scale(1.1, 1.1, this.cx, this.cy);

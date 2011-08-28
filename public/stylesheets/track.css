@@ -78,15 +78,15 @@ header {
 }
 
 #charts {
-    margin: 0 -5px;
+    margin: 0 -10px;
 }
 
 #charts .chart {
     float: left;
     display: inline-block;
-    width:  395px;
-    margin: 4px;
-    height: 240px;    
+    width:  390px;
+    margin: 9px;
+    height: 200px;    
     overflow: hidden;
 }
 
