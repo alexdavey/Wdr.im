@@ -7,7 +7,6 @@ var socketIO = require('socket.io'),
 	request  = require('request'),
 	mongo = require('mongodb'),
 	redis = require('redis'),
-	nko   = require('nko')('VCPo4hn9tsswPvB7'),
 	_ = require('underscore');
 
 
