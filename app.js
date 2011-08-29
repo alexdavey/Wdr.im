@@ -18,7 +18,6 @@ var socketIO = require('socket.io'),
 "use strict";
 
 var charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-=";
-var io;
 
 // =============================================================================
 // |                              Database wrapper							   |
@@ -120,42 +119,48 @@ DB.prototype.streamId = function(shortUrl, data, end) {
 // |                            Socket.io wrapper							   |
 // =============================================================================
 
-function Socket(app) {
-	var that = this;
-	this.clients = {};
-	this.io = socketIO.listen(app);
-	this.io.sockets.on('connection', function(socket) {
-		socket.on('id', function(data) {
-			db.aggregate(data, function(item) {
-				console.dir(item);
-				socket.emit('message', JSON.stringify(item));
-				console.log('sent Data');
-			});
-			that.addClient(data, socket);
-		});
+
+	io.sockets.on('connection', function(socket) {
+		socket.on('id', function() {
+			if (validateId(id)) socket.join(id);
+		})
 	});
-}
-
-Socket.prototype.push = function(id, data) {
-	if (id in this.clients)
-		this.clients[id].emit('update', JSON.stringify(data));
-};
-
-Socket.prototype.addClient = function(id, socket) {
-	if (id in this.clients) {
-		this.clients[id].push(socket);
-	} else {
-		this.clients[id] = [socket];
-	}
-};
-
-Socket.prototype.removeClient = function(id) {
-	if (id in this.clients) delete this.clients[id];
-};
-
-Socket.prototype.clientConnected = function(id) {
-	return id in this.clients;
-};
+// function Socket(app) {
+// 	var that = this;
+// 	this.clients = {};
+// 	this.io = socketIO.listen(app);
+// 	this.io.sockets.on('connection', function(socket) {
+// 		socket.on('id', function(data) {
+// 			db.aggregate(data, function(item) {
+// 				console.dir(item);
+// 				socket.emit('message', JSON.stringify(item));
+// 				console.log('sent Data');
+// 			});
+// 			that.addClient(data, socket);
+// 		});
+// 	});
+// }
+// 
+// Socket.prototype.push = function(id, data) {
+// 	if (id in this.clients)
+// 		this.clients[id].emit('update', JSON.stringify(data));
+// };
+// 
+// Socket.prototype.addClient = function(id, socket) {
+// 	if (id in this.clients) {
+// 		this.clients[id].push(socket);
+// 	} else {
+// 		this.clients[id] = [socket];
+// 	}
+// };
+// 
+// Socket.prototype.removeClient = function(id) {
+// 	if (id in this.clients) delete this.clients[id];
+// };
+// 
+// Socket.prototype.clientConnected = function(id) {
+// 	return id in this.clients;
+// };
 
 // =============================================================================
 // |                              Utility methods							   |
@@ -163,6 +168,10 @@ Socket.prototype.clientConnected = function(id) {
 
 function handleError(err) {
 	if (err) throw err;
+}
+
+function validateId(id) {
+	return typeof id == 'string' && id.length < 6;
 }
 
 function parseData(req) {
@@ -217,21 +226,6 @@ function getIp(req) {
 	return ipAddress;
 }
 
-function parseIp(ip, callback) {
-    http.get({
-        host:   'www.geoplugin.net',
-        port:   80,
-        path:   '/json.gp?ip=' + ip
-    }, function(res){
-        var geoPlugin = function(data){
-            callback(data.geoplugin_latitude, data.geoplugin_longitude, data.geoplugin_countryName);
-        }
-        exec(JSON.res.body);
-    }).on('error', function(e){
-        throw 'Couldn\'t get location';
-    });
-}
-
 // =============================================================================
 // |                                  Express  								   |
 // =============================================================================
@@ -265,7 +259,7 @@ app.get('/', function(req, res) {
 	});
 });
 
-app.get(/\/([\-\=0-9]{1,6})\+/i, function(req, res) {
+app.get(/\/([\-\=\_0-9a-z]{1,6})\+/i, function(req, res) {
 	res.render('track', {
 		id : req.params[0],
 		longUrl : 'http://google.com',
@@ -275,12 +269,14 @@ app.get(/\/([\-\=0-9]{1,6})\+/i, function(req, res) {
 });
 
 // API routes
-app.get(/\/([\-\=0-9]{1,6})/i, function(req, res) {
+app.get(/\/([\-\=\_0-9a-z]{1,6})/i, function(req, res) {
 	var id = req.params[0],
 		data = parseData(req);
 	db.getLongUrl(id, function(url) { res.redirect(url) });
 	db.pushLink(id, data);
-	if (io.clientConnected(id)) io.push(id, data);
+	if (io.clientConnected(id)) {
+		io.push(id, data);
+	}
 });
 
 app.post(/\/data/, function(req, res) {
@@ -314,11 +310,6 @@ var db = new DB('localhost', 27017, 'testing', function() {
 	});
 	io = new Socket(app);
 	app.listen(3000);
-        io = socketIO.listen(app);
-        io.on('id', function(data){
-            console.log(data);
-        });
-        
 	console.log("Express server listening on port %d in %s mode", 
 		app.address().port, app.settings.env);
 });
