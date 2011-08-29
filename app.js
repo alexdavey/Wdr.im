@@ -18,6 +18,9 @@ var socketIO = require('socket.io'),
 
 var charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-=";
 
+var app = module.exports = express.createServer();
+var io = socketIO.listen(app);
+
 // =============================================================================
 // |                              Database wrapper							   |
 // =============================================================================
@@ -37,7 +40,10 @@ function DB(path, port, dbName, callback) {
 	DB.open(function(err, db) {
 		if (err) throw err;
 		that.db = db;
-		callback();
+		that.collection('links', function(collection) { 
+			this.links = collection;
+			callback();
+		});
 	});
 }
 
@@ -69,21 +75,28 @@ DB.prototype.collection = function(name, fn) {
 
 DB.prototype.createLinkUpdateObj = function(update) {
 	return {
+		$inc : { clicks : 1 },
 		$push : {
 			ip : update.ip,
 			time : new Date()
-		},
-		$inc : { clicks : 1 }
+		}
 	};
 };
 
-DB.prototype.getLongUrl = function(shortUrl, callback) {
-	this.collection('links', function(collection) {
-		collection.findOne({ shortUrl : shortUrl }, function(err, item) {
+DB.prototype.stats = function(callback) {
+	this.collection('stats', function(err, collection) {
+		if (err) throw err
+		collection.findOne({}, function(err, item) {
 			if (err) throw err;
-			if (!item) return '/404';
-			callback(item.longUrl);
+			callback(item);
 		});
+	});
+}
+
+DB.prototype.getLongUrl = function(shortUrl, callback) {
+	this.findLink(shortUrl, function(item) {
+		if (!item) return '/404';
+		callback(item.longUrl);
 	});
 };
 
@@ -97,12 +110,19 @@ DB.prototype.validateClick = function(obj) {
 	});
 };
 
-DB.prototype.aggregate = function(id, callback) {
-	db.collection('links', function(collection) {
+DB.prototype.findLink = function(id, callback) {
+	this.collection('links', function(collection) {
 		collection.findOne({ shortUrl : id }, function(err, item) {
-			console.dir(item);
+			if (err) throw err;
 			callback(item);
 		});
+	});
+};
+
+DB.prototype.aggregate = function(id, callback) {
+	this.findLink(id, function(item) {
+		console.dir(item);
+		callback(item);
 	});
 };
 
@@ -118,12 +138,17 @@ DB.prototype.streamId = function(shortUrl, data, end) {
 // |                            Socket.io wrapper							   |
 // =============================================================================
 
-
+	var inRoom = {};
+	
 	io.sockets.on('connection', function(socket) {
 		socket.on('id', function() {
-			if (validateId(id)) socket.join(id);
+			if (validateId(id)) {
+				socket.join(id);
+			}
+	
 		})
 	});
+
 // function Socket(app) {
 // 	var that = this;
 // 	this.clients = {};
@@ -170,7 +195,9 @@ function handleError(err) {
 }
 
 function validateId(id) {
-	return typeof id == 'string' && id.length < 6;
+	var len = id.length;
+	return typeof id == 'string' && len < 6 &&
+			/[\-\=\_a-z0-9]/i.exec(id).length == len;
 }
 
 function parseData(req) {
@@ -229,7 +256,6 @@ function getIp(req) {
 // |                                  Express  								   |
 // =============================================================================
 
-var app = module.exports = express.createServer();
 
 app.configure(function() {
 	app.set('views', __dirname + '/views');
@@ -258,7 +284,7 @@ app.get('/', function(req, res) {
 	});
 });
 
-app.get(/\/([\-\=\_0-9a-z]{1,6})\+/i, function(req, res) {
+app.get(/\/([\=\-\_0-9]{1,6})\+/i, function(req, res) {
 	res.render('track', {
 		id : req.params[0],
 		longUrl : 'http://google.com',
@@ -268,14 +294,15 @@ app.get(/\/([\-\=\_0-9a-z]{1,6})\+/i, function(req, res) {
 });
 
 // API routes
-app.get(/\/([\-\=\_0-9a-z]{1,6})/i, function(req, res) {
+app.get(/\/([\=\-\_0-9]{1,6})/i, function(req, res) {
 	var id = req.params[0],
 		data = parseData(req);
 	db.getLongUrl(id, function(url) { res.redirect(url) });
 	db.pushLink(id, data);
-	if (io.clientConnected(id)) {
-		io.push(id, data);
-	}
+	if (inRoom(id)) socket.send(JSON.stringify(data))
+	// if (io.clientConnected(id)) {
+	// 	io.push(id, data);
+	// }
 });
 
 app.post(/\/data/, function(req, res) {
@@ -294,20 +321,21 @@ app.post(/\/data/, function(req, res) {
 // |                                 Start  								   |
 // =============================================================================
 
-var io, id;
+var id;
 var db = new DB('localhost', 27017, 'testing', function() {
+	db.stats(function(stats) {
+		/////////
+	});
 	db.collection('stats', function(collection) {
 		collection.findOne({}, function(err, item) {
-			if (err) throw err; 
+			if (err)  { console.log('We have an error! An error!'); } 
 			if (item && item.maxId) {
 				id = (item && item.maxId) || 1;
 			} else {
 				collection.insert({ maxId : 1 });
 			}
-			console.dir(item);
 		});
 	});
-	io = new Socket(app);
 	app.listen(3000);
 	console.log("Express server listening on port %d in %s mode", 
 		app.address().port, app.settings.env);
