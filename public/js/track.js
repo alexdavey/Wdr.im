@@ -31,7 +31,8 @@ var track = new (function(){
 	var myOptions = {
 	    zoom: 2,
 	    center: myLatlng,
-	    mapTypeId: google.maps.MapTypeId.HYBRID
+	    mapTypeId: google.maps.MapTypeId.HYBRID,
+		disableDefaultUI : true,
 	}
 	this.map.map = new google.maps.Map($("map"), myOptions);
     }
@@ -106,7 +107,7 @@ var track = new (function(){
     socket.on('connect', function(){
         socket.emit('id', window.pageID);
         
-        socket.on('message', function(data){
+        socket.on('update', function(data){
 			console.dir(data);
             data = JSON.decode(data);
             

@@ -22,56 +22,19 @@ var app = module.exports = express.createServer();
 var io = socketIO.listen(app);
 
 // =============================================================================
-// |                            Socket.io wrapper							   |
+// |                                  Socket.io	    						   |
 // =============================================================================
 
-	io.sockets.on('connection', function(socket) {
-		socket.on('id', function(id) {
-			console.log(io.sockets.clients);
-			if (validateId(id)) socket.join(id);
-		});
+io.sockets.on('connection', function(socket) {
+	socket.on('id', function(id) {
+		console.log(io.sockets.clients);
+		if (validateId(id)) socket.join(id);
 	});
+});
 
-	function inRoom(id) {
-		
-	}
-
-// function Socket(app) {
-// 	var that = this;
-// 	this.clients = {};
-// 	this.io = socketIO.listen(app);
-// 	this.io.sockets.on('connection', function(socket) {
-// 		socket.on('id', function(data) {
-// 			db.aggregate(data, function(item) {
-// 				console.dir(item);
-// 				socket.emit('message', JSON.stringify(item));
-// 				console.log('sent Data');
-// 			});
-// 			that.addClient(data, socket);
-// 		});
-// 	});
-// }
-// 
-// Socket.prototype.push = function(id, data) {
-// 	if (id in this.clients)
-// 		this.clients[id].emit('update', JSON.stringify(data));
-// };
-// 
-// Socket.prototype.addClient = function(id, socket) {
-// 	if (id in this.clients) {
-// 		this.clients[id].push(socket);
-// 	} else {
-// 		this.clients[id] = [socket];
-// 	}
-// };
-// 
-// Socket.prototype.removeClient = function(id) {
-// 	if (id in this.clients) delete this.clients[id];
-// };
-// 
-// Socket.prototype.clientConnected = function(id) {
-// 	return id in this.clients;
-// };
+function pushToSocket(id, data) {
+	io.sockets.in(id).json.emit('update', data);
+}
 
 // =============================================================================
 // |                              Utility methods							   |
@@ -186,10 +149,7 @@ app.get(/\/([\=\-\_0-9]{1,6})/i, function(req, res) {
 		data = parseData(req);
 	db.getLongUrl(id, function(url) { res.redirect(url) });
 	db.pushLink(id, data);
-	if (inRoom(id)) socket.send(JSON.stringify(data))
-	// if (io.clientConnected(id)) {
-	// 	io.push(id, data);
-	// }
+	pushToSocket(id, data);
 });
 
 app.post(/\/data/, function(req, res) {
