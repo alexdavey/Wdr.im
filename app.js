@@ -25,14 +25,16 @@ var io = socketIO.listen(app);
 // |                            Socket.io wrapper							   |
 // =============================================================================
 
-	var inRoom = {};
-	
 	io.sockets.on('connection', function(socket) {
-		socket.on('id', function() {
+		socket.on('id', function(id) {
+			console.log(io.sockets.clients);
 			if (validateId(id)) socket.join(id);
-	
 		});
 	});
+
+	function inRoom(id) {
+		
+	}
 
 // function Socket(app) {
 // 	var that = this;
