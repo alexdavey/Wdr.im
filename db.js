@@ -36,7 +36,7 @@ function DB(path, port, dbName, callback) {
 DB.prototype.insertLink = function(urls) {
 	if (!this.validateLink(urls)) throw err;
 	var obj = _.extend(urls, this.skeleton);
-	this.links.insert(obj, { safe : true }, handleError);
+	this.links.insert(obj, { safe : true }, function(err) { if (err) throw err });
 	this.stats.update({}, { $inc : { maxId : 1 } });
 };
 
